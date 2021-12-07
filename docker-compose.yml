@@ -7,6 +7,6 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - numbot_db:/opt/numbot_db
+      - numbot.sq3:/opt/numbot_db/numbot.sq3
 volumes:
-  numbot_db:
+  numbot.sq3:
