@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  numbot:
+    image: ddrm86/numbot:1.0
+    volumes:
+      - numbot_db:/opt/numbot_db
+volumes:
+  numbot_db:
