@@ -1,7 +1,11 @@
 version: "3.9"
 services:
   numbot:
+    build:
+      context: .
     image: ddrm86/numbot:1.0
+    ports:
+      - "8080:8080"
     volumes:
       - numbot_db:/opt/numbot_db
 volumes:
