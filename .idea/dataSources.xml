@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="numbot.sq3" uuid="4311e6af-caa4-464a-b89b-b97798486259">
-      <driver-ref>sqlite.xerial</driver-ref>
+    <data-source source="LOCAL" name="HSQLDB (Local)" uuid="6ed0d8ce-f455-4589-8c32-bd9ce3fbae64">
+      <driver-ref>hsqldb.local</driver-ref>
       <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/numbot.sq3</jdbc-url>
+      <jdbc-driver>org.hsqldb.jdbc.JDBCDriver</jdbc-driver>
+      <jdbc-url>jdbc:hsqldb:file:numbot_db/</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
