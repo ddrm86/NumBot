@@ -46,6 +46,12 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core-jakarta</artifactId>
             <version>5.6.1.Final</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>2.6.1</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

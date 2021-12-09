@@ -1,2 +1,7 @@
 FROM ddrm86/wildfly:preview-25.0.1.Final
-COPY target/numbot-1.0-SNAPSHOT.war /opt/jboss/wildfly/standalone/deployments/
+
+COPY hsqldb.jar $JBOSS_HOME/modules/system/layers/base/org/hsqldb/main/
+COPY module.xml $JBOSS_HOME/modules/system/layers/base/org/hsqldb/main/
+COPY standalone.xml $JBOSS_HOME/standalone/configuration/
+
+COPY target/numbot-1.0-SNAPSHOT.war $JBOSS_HOME/standalone/deployments/
