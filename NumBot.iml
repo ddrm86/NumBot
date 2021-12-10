@@ -18,6 +18,7 @@
         <setting name="provider-name" value="Hibernate" />
         <datasource-mapping>
           <factory-entry name="default" value="f19eece5-7b8e-4f46-8103-a6f2e03e42a8" />
+          <factory-entry name="pu-numbot" value="f19eece5-7b8e-4f46-8103-a6f2e03e42a8" />
         </datasource-mapping>
         <naming-strategy-map>
           <unit-entry name="default" />
@@ -26,7 +27,7 @@
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_16">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
