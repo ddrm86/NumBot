@@ -16,27 +16,31 @@ public class Extraordinario {
     @Column(name = "numero", nullable = false)
     private int numero;
 
-    public int getAnno() {
-        return anno;
+    public Extraordinario() {
     }
 
-    public void setAnno(int anno) {
+    public Extraordinario(Long id, int anno, int numero) {
+        this.id = id;
+        if (anno <= 0) {
+            throw new IllegalArgumentException("El año debe ser mayor que cero");
+        }
         this.anno = anno;
+        if (numero <= 0) {
+            throw new IllegalArgumentException("El número de boletines extraordinarios" +
+                    " debe ser mayor que cero");
+        }
+        this.numero = numero;
+    }
+
+    public int getAnno() {
+        return anno;
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public int getNumero() {
         return numero;
-    }
-
-    public void setNumero(int numero) {
-        this.numero = numero;
     }
 }
