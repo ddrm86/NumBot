@@ -18,7 +18,7 @@
         <setting name="provider-name" value="Hibernate" />
         <datasource-mapping>
           <factory-entry name="default" value="f19eece5-7b8e-4f46-8103-a6f2e03e42a8" />
-          <factory-entry name="pu-numbot" value="f19eece5-7b8e-4f46-8103-a6f2e03e42a8" />
+          <factory-entry name="pu-numbot" value="20c2f3a3-ea06-4dde-a7b2-b723c271d720" />
         </datasource-mapping>
         <naming-strategy-map>
           <unit-entry name="default" />
@@ -71,5 +71,6 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-engine:5.8.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-engine:1.8.2" level="project" />
     <orderEntry type="library" name="Maven: org.xerial:sqlite-jdbc:3.36.0.3" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.9" level="project" />
   </component>
 </module>

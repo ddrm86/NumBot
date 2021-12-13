@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="numbot_db" uuid="f19eece5-7b8e-4f46-8103-a6f2e03e42a8">
+    <data-source source="LOCAL" name="numbot_db" uuid="20c2f3a3-ea06-4dde-a7b2-b723c271d720">
       <driver-ref>hsqldb.local</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.hsqldb.jdbc.JDBCDriver</jdbc-driver>

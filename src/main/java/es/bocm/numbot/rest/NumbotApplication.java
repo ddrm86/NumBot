@@ -1,9 +1,9 @@
-package es.bocm.numbot;
+package es.bocm.numbot.rest;
 
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
 
 @ApplicationPath("/api")
-public class HelloApplication extends Application {
+public class NumbotApplication extends Application {
 
 }
