@@ -1,6 +1,7 @@
 package es.bocm.numbot.rest;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import es.bocm.numbot.entities.Extraordinario;
 import jakarta.annotation.Resource;
@@ -28,7 +29,7 @@ public class ExtraordinarioResource {
     @Path("/{anno}")
     public Response getNumExtraordinarios(@PathParam("anno") String anno) {
         ExtraordinarioResponse response;
-        if (!esAnnoValido(anno)) {
+        if (esAnnoNoValido(anno)) {
             return crearRespuestaAnnoNoValido();
         } else {
             Optional<Extraordinario> opt_ext;
@@ -55,11 +56,19 @@ public class ExtraordinarioResource {
     @Path("/{anno}")
     public Response createOrUpdateNumExtraordinarios(@PathParam("anno") String anno, String ext_json) {
         ExtraordinarioResponse response;
-        if (!esAnnoValido(anno)) {
+        if (esAnnoNoValido(anno)) {
             return crearRespuestaAnnoNoValido();
         } else {
             Extraordinario ext;
-            Extraordinario ext_candidato = crearExtraordinario(anno, ext_json); //TODO handle bad arguments
+            Extraordinario ext_candidato;
+            try {
+                ext_candidato = crearExtraordinario(anno, ext_json);
+            } catch (IllegalArgumentException | JsonSyntaxException | NullPointerException e) {
+                response = new ExtraordinarioResponse(false, "error", "Formato de número de boletines" +
+                        " extraordinarios incorrecto. Debe ser un entero mayor o igual que cero. Ejemplo:" +
+                        " {\"numero_extraordinarios\": \"1\"}");
+                return crearRespuestaJson(Response.Status.BAD_REQUEST, response);
+            }
             Optional<Extraordinario> opt_ext = buscarPorAnno(anno);
             if (opt_ext.isPresent()) {
                 ext = opt_ext.get();
@@ -93,14 +102,14 @@ public class ExtraordinarioResource {
                 .build();
     }
 
-    private boolean esAnnoValido(String anno) {
+    private boolean esAnnoNoValido(String anno) {
         String dummyDate = anno + "-01-01";
         try {
             LocalDate.parse(dummyDate);
         } catch (DateTimeParseException e) {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     private Response crearRespuestaAnnoNoValido() {
