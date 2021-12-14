@@ -3,6 +3,8 @@ package es.bocm.numbot.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 @Entity
 @Table(name = "festivos")
@@ -31,6 +33,11 @@ public class Festivo {
             throw new IllegalArgumentException("Se debe especificar una descripción");
         }
         this.descripcion = descripcion;
+    }
+
+    public Map<String, String> toMap() {
+        DateTimeFormatter formmater = DateTimeFormatter.ofPattern("MM-dd");
+        return Map.of("descripcion", this.descripcion, "fecha", this.fecha.format(formmater));
     }
 
     public String getDescripcion() {
