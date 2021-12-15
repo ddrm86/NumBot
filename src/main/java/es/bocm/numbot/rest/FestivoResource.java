@@ -1,6 +1,7 @@
 package es.bocm.numbot.rest;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import es.bocm.numbot.entities.Festivo;
 import jakarta.annotation.Resource;
@@ -13,6 +14,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +62,17 @@ public class FestivoResource {
         if (esAnnoNoValido(anno)) {
             return crearRespuestaAnnoNoValido();
         } else {
-            List<Festivo> festivos_nuevos = crearFestivos(anno, festivos_json);  //TODO: validar entrada
+            List<Festivo> festivos_nuevos;
+            try {
+                festivos_nuevos = crearFestivos(anno, festivos_json);
+            } catch (IllegalArgumentException | JsonSyntaxException | NullPointerException | DateTimeParseException e) {
+                ErrorResponse response = new ErrorResponse("Festivos con formato o fecha no válida. " +
+                        "El formato debe ser [{\"descripcion\": \"descripcion festivo 1\", \"fecha\": \"MM-DD\"}, " +
+                        "{\"descripcion\": \"descripcion festivo 2\", \"fecha\": \"MM-DD\"}]. No se deben incluir " +
+                        "festivos que caen en sábado ni en domingo, o en los días que no hay boletín " +
+                        "(1 de enero, 25 de diciembre y Viernes Santo)");
+                return crearRespuestaJson(Response.Status.BAD_REQUEST, response);
+            }
             try {
                 userTransaction.begin();
                 List<Festivo> festivos_antiguos = buscarPorAnno(anno);
