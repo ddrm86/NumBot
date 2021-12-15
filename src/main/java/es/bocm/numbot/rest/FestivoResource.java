@@ -37,7 +37,7 @@ public class FestivoResource {
         } else {
             List<Festivo> festivos;
             try {
-                festivos = buscarPorAnno(anno);
+                festivos = buscarPorAnno(em, anno);
             } catch (Exception e) {
                 return crearRespuestaErrorDesconocido();
             }
@@ -75,7 +75,7 @@ public class FestivoResource {
             }
             try {
                 userTransaction.begin();
-                List<Festivo> festivos_antiguos = buscarPorAnno(anno);
+                List<Festivo> festivos_antiguos = buscarPorAnno(em, anno);
                 festivos_antiguos.forEach(f -> em.remove(f));
                 userTransaction.commit();
                 userTransaction.begin();
@@ -88,12 +88,6 @@ public class FestivoResource {
             FestivoResponse response = new FestivoResponse(true, data);
             return crearRespuestaJson(Response.Status.OK, response);
         }
-    }
-
-    private List<Festivo> buscarPorAnno(String anno) {
-        return em.createQuery("select e from Festivo e where YEAR(e.fecha) = :anno", Festivo.class)
-                .setParameter("anno", Integer.parseInt(anno))
-                .getResultList();
     }
 
     private List<Festivo> crearFestivos(String anno, String festivos_json) {

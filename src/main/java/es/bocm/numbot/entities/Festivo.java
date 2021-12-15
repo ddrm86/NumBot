@@ -10,6 +10,7 @@ import java.util.Map;
 
 @Entity
 @Table(name = "festivos")
+@NamedQuery(name="Festivo.buscarPorAnno", query="select e from Festivo e where YEAR(e.fecha) = :anno")
 public class Festivo {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

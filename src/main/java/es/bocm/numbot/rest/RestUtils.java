@@ -1,11 +1,14 @@
 package es.bocm.numbot.rest;
 
 import com.google.gson.Gson;
+import es.bocm.numbot.entities.Festivo;
+import jakarta.persistence.EntityManager;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
 public final class RestUtils {
     private RestUtils() {
@@ -27,7 +30,7 @@ public final class RestUtils {
         return crearRespuestaJson(Response.Status.BAD_REQUEST, response);
     }
 
-    public static Response crearRespuestaJson(Response.Status estado, NumbotResponse objeto_respuesta) {
+    public static Response crearRespuestaJson(Response.Status estado, NumbotApiResponse objeto_respuesta) {
         return Response
                 .status(estado)
                 .entity(new Gson().toJson(objeto_respuesta))
@@ -41,4 +44,9 @@ public final class RestUtils {
         return crearRespuestaJson(Response.Status.INTERNAL_SERVER_ERROR, response);
     }
 
+    public static List<Festivo> buscarPorAnno(EntityManager em, String anno) {
+        return em.createNamedQuery("Festivo.buscarPorAnno", Festivo.class)
+                .setParameter("anno", Integer.parseInt(anno))
+                .getResultList();
+    }
 }
