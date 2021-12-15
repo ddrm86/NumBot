@@ -2,7 +2,7 @@ package es.bocm.numbot.rest;
 
 import java.util.Map;
 
-public record ExtraordinarioResponse(boolean exito, Map<String, String> data) implements NumbotResponse {
+public record ExtraordinarioResponse(boolean exito, Map<String, String> data) implements NumbotApiResponse {
     public ExtraordinarioResponse(boolean exito, String key, String value) {
         this(exito, Map.of(key, value));
     }
