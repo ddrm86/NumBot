@@ -8,6 +8,8 @@ import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+import static es.bocm.numbot.calculations.CalcUtils.getEasterSundayDate;
+
 @Entity
 @Table(name = "festivos")
 @NamedQuery(name="Festivo.buscarPorAnno", query="select f from Festivo f where YEAR(f.fecha) = :anno")
@@ -55,23 +57,4 @@ public class Festivo {
         if (fecha.equals(viernesSanto)) {return false;}
         return true;
     }
-
-    private static LocalDate getEasterSundayDate(int year) {
-        int a = year % 19,
-            b = year / 100,
-            c = year % 100,
-            d = b / 4,
-            e = b % 4,
-            g = (8 * b + 13) / 25,
-            h = (19 * a + b - d - g + 15) % 30,
-            j = c / 4,
-            k = c % 4,
-            m = (a + 11 * h) / 319,
-            r = (2 * e + 2 * j - k - h + m + 32) % 7,
-            month = (h - m + r + 90) / 25,
-            day = (h - m + r + month + 19) % 32;
-
-        return LocalDate.of(year, month, day);
-    }
-
 }
