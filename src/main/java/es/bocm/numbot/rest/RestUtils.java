@@ -1,6 +1,7 @@
 package es.bocm.numbot.rest;
 
 import com.google.gson.Gson;
+import es.bocm.numbot.entities.Extraordinario;
 import es.bocm.numbot.entities.Festivo;
 import jakarta.persistence.EntityManager;
 import jakarta.ws.rs.core.MediaType;
@@ -30,6 +31,12 @@ public final class RestUtils {
         return crearRespuestaJson(Response.Status.BAD_REQUEST, response);
     }
 
+    public static Response crearRespuestaFechaNoValida() {
+        ErrorResponse response = new ErrorResponse("Fecha errónea o con formato incorrecto. El formato" +
+                " debe ser YYYY-MM-DD");
+        return crearRespuestaJson(Response.Status.BAD_REQUEST, response);
+    }
+
     public static Response crearRespuestaJson(Response.Status estado, NumbotApiResponse objeto_respuesta) {
         return Response
                 .status(estado)
@@ -44,8 +51,14 @@ public final class RestUtils {
         return crearRespuestaJson(Response.Status.INTERNAL_SERVER_ERROR, response);
     }
 
-    public static List<Festivo> buscarPorAnno(EntityManager em, String anno) {
+    public static List<Festivo> buscarFestivosPorAnno(EntityManager em, String anno) {
         return em.createNamedQuery("Festivo.buscarPorAnno", Festivo.class)
+                .setParameter("anno", Integer.parseInt(anno))
+                .getResultList();
+    }
+
+    public static List<Extraordinario> buscarExtraordinariosPorAnno(EntityManager em, String anno) {
+        return em.createNamedQuery("Extraordinario.buscarPorAnno", Extraordinario.class)
                 .setParameter("anno", Integer.parseInt(anno))
                 .getResultList();
     }

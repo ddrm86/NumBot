@@ -37,7 +37,7 @@ public class FestivoResource {
         } else {
             List<Festivo> festivos;
             try {
-                festivos = buscarPorAnno(em, anno);
+                festivos = buscarFestivosPorAnno(em, anno);
             } catch (Exception e) {
                 return crearRespuestaErrorDesconocido();
             }
@@ -75,7 +75,7 @@ public class FestivoResource {
             }
             try {
                 userTransaction.begin();
-                List<Festivo> festivos_antiguos = buscarPorAnno(em, anno);
+                List<Festivo> festivos_antiguos = buscarFestivosPorAnno(em, anno);
                 festivos_antiguos.forEach(f -> em.remove(f));
                 userTransaction.commit();
                 userTransaction.begin();
