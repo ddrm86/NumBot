@@ -36,7 +36,7 @@ public class ExtraordinarioResource {
         } else {
             List<Extraordinario> extraordinarios;
             try {
-                extraordinarios = buscarExtraordinariosPorAnno(em, anno);
+                extraordinarios = buscarExtraordinariosPorAnno(em, Integer.parseInt(anno));
             } catch (Exception e) {
                 return crearRespuestaErrorDesconocido();
             }

@@ -37,15 +37,12 @@ public class FestivoResource {
         } else {
             List<Festivo> festivos;
             try {
-                festivos = buscarFestivosPorAnno(em, anno);
+                festivos = buscarFestivosPorAnno(em, Integer.parseInt(anno));
             } catch (Exception e) {
                 return crearRespuestaErrorDesconocido();
             }
             if (festivos.isEmpty()) {
-                ErrorResponse response = new ErrorResponse(
-                        "Faltan datos en la BBDD para procesar la petición: no están establecidos los " +
-                                "festivos de este año.");
-                return crearRespuestaJson(Response.Status.NOT_FOUND, response);
+                return crearRespuestaFaltanFestivos();
             } else {
                 List<Map<String,String>> data = festivos.stream().map(Festivo::toMap).toList();
                 FestivoResponse response = new FestivoResponse(true, data);
@@ -75,7 +72,7 @@ public class FestivoResource {
             }
             try {
                 userTransaction.begin();
-                List<Festivo> festivos_antiguos = buscarFestivosPorAnno(em, anno);
+                List<Festivo> festivos_antiguos = buscarFestivosPorAnno(em, Integer.parseInt(anno));
                 festivos_antiguos.forEach(f -> em.remove(f));
                 userTransaction.commit();
                 userTransaction.begin();

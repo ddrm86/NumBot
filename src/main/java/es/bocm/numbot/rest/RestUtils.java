@@ -51,15 +51,22 @@ public final class RestUtils {
         return crearRespuestaJson(Response.Status.INTERNAL_SERVER_ERROR, response);
     }
 
-    public static List<Festivo> buscarFestivosPorAnno(EntityManager em, String anno) {
+    public static Response crearRespuestaFaltanFestivos() {
+        ErrorResponse response = new ErrorResponse(
+                "Faltan datos en la BBDD para procesar la petición: no están establecidos los " +
+                        "festivos de este año.");
+        return  crearRespuestaJson(Response.Status.NOT_FOUND, response);
+    }
+
+    public static List<Festivo> buscarFestivosPorAnno(EntityManager em, int anno) {
         return em.createNamedQuery("Festivo.buscarPorAnno", Festivo.class)
-                .setParameter("anno", Integer.parseInt(anno))
+                .setParameter("anno", anno)
                 .getResultList();
     }
 
-    public static List<Extraordinario> buscarExtraordinariosPorAnno(EntityManager em, String anno) {
+    public static List<Extraordinario> buscarExtraordinariosPorAnno(EntityManager em, int anno) {
         return em.createNamedQuery("Extraordinario.buscarPorAnno", Extraordinario.class)
-                .setParameter("anno", Integer.parseInt(anno))
+                .setParameter("anno", anno)
                 .getResultList();
     }
 }

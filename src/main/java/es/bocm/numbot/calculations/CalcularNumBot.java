@@ -1,16 +1,19 @@
 package es.bocm.numbot.calculations;
 
+import es.bocm.numbot.entities.Extraordinario;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 
 public final class CalcularNumBot {
     private CalcularNumBot() {
         throw new AssertionError("Clase de utilidades. No instanciar.");
     }
 
-    public static int getNumBot(LocalDate fecha, int numExtraordinarios) {
+    public static int getNumBot(LocalDate fecha, int numExtMismoAnnoAntesOIgualFecha) {
         final LocalDate unoEnero = LocalDate.of(fecha.getYear(), Month.JANUARY, 1);
         int numeroDias = (int) (ChronoUnit.DAYS.between(unoEnero, fecha) + 1);
         int numNoBot = (int) CalcUtils.fechasSinBoletin(fecha.getYear())
@@ -18,7 +21,15 @@ public final class CalcularNumBot {
                 .filter(d -> d.getDayOfWeek() != DayOfWeek.SUNDAY)
                 .filter(fecha::isAfter)
                 .count();
-        return numeroDias + numExtraordinarios - calcNumDomingos(fecha) - numNoBot;
+        return numeroDias + numExtMismoAnnoAntesOIgualFecha - calcNumDomingos(fecha) - numNoBot;
+    }
+
+    public static int getNumBot(LocalDate fecha, Collection<Extraordinario> extraordinariosAnno) {
+        int numExtMismoAnnoAntesOIgualFecha = (int) extraordinariosAnno
+                .stream()
+                .filter(e -> e.getFecha().isBefore(fecha.plusDays(1)))
+                .count();
+        return getNumBot(fecha, numExtMismoAnnoAntesOIgualFecha);
     }
 
     private static int calcNumDias(LocalDate fecha) {
