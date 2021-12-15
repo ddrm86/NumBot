@@ -1,11 +1,9 @@
 package es.bocm.numbot.calculations;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
-import java.util.stream.Stream;
-
-import static es.bocm.numbot.calculations.CalcUtils.getEasterSundayDate;
 
 public final class CalcularNumBot {
     private CalcularNumBot() {
@@ -14,10 +12,9 @@ public final class CalcularNumBot {
 
     public static int getNumBot(LocalDate fecha, int numExtraordinarios) {
         final LocalDate unoEnero = LocalDate.of(fecha.getYear(), Month.JANUARY, 1);
-        final LocalDate veinticincoDiciembre = LocalDate.of(fecha.getYear(), Month.DECEMBER, 25);
-        final LocalDate viernesSanto = getEasterSundayDate(fecha.getYear()).minusDays(2);
         int numeroDias = (int) (ChronoUnit.DAYS.between(unoEnero, fecha) + 1);
-        int numNoBot = (int) Stream.of(unoEnero, veinticincoDiciembre, viernesSanto)
+        int numNoBot = (int) CalcUtils.fechasSinBoletin(fecha.getYear())
+                .stream()
                 .filter(d -> d.getDayOfWeek() != DayOfWeek.SUNDAY)
                 .filter(fecha::isAfter)
                 .count();

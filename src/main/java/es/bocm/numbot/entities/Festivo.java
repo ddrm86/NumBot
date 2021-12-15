@@ -1,14 +1,12 @@
 package es.bocm.numbot.entities;
 
+import es.bocm.numbot.calculations.CalcUtils;
 import jakarta.persistence.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
-
-import static es.bocm.numbot.calculations.CalcUtils.getEasterSundayDate;
 
 @Entity
 @Table(name = "festivos")
@@ -31,7 +29,7 @@ public class Festivo {
     public Festivo(Long id, LocalDate fecha, String descripcion) {
         this.id = id;
         if (!esFechaValida(fecha)) {
-            throw new IllegalArgumentException("Se debe especificar una fecha");
+            throw new IllegalArgumentException("No es una fecha válida");
         }
         this.fecha = fecha;
         if (descripcion == null || descripcion.isBlank()) {
@@ -45,16 +43,15 @@ public class Festivo {
         return Map.of("descripcion", this.descripcion, "fecha", this.fecha.format(formmater));
     }
 
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
     private boolean esFechaValida(LocalDate fecha) {
         if (fecha == null) {return false;}
         if (fecha.getDayOfWeek() == DayOfWeek.SATURDAY) {return false;}
         if (fecha.getDayOfWeek() == DayOfWeek.SUNDAY) {return false;}
-        final LocalDate unoEnero = LocalDate.of(fecha.getYear(), Month.JANUARY, 1);
-        if (fecha.equals(unoEnero)) {return false;}
-        final LocalDate veinticincoDiciembre = LocalDate.of(fecha.getYear(), Month.DECEMBER, 25);
-        if (fecha.equals(veinticincoDiciembre)) {return false;}
-        final LocalDate viernesSanto = getEasterSundayDate(fecha.getYear()).minusDays(2);
-        if (fecha.equals(viernesSanto)) {return false;}
+        if (CalcUtils.esFechaSinBoletin(fecha)) {return false;}
         return true;
     }
 }
