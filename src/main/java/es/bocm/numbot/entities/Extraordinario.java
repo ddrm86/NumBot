@@ -46,10 +46,6 @@ public class Extraordinario {
         return fecha;
     }
 
-    public Long getId() {
-        return id;
-    }
-
     public int getNumero() {
         return numero;
     }
