@@ -26,10 +26,9 @@ class ExtraordinarioTest {
     }
 
     @Test
-    void generatesCorrecStringMap() {
+    void generatesCorrectStringMap() {
         Map<String, String> ref_map = Map.of("numero", "2", "fecha", "01-12");
         Extraordinario ext = new Extraordinario(null, LocalDate.of(2021, 1, 12), 2);
-        Map<String, String> ext_map = ext.toMap();
-        assertEquals(ref_map, ext_map);
+        assertEquals(ref_map, ext.toMap());
     }
 }
