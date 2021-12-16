@@ -1,58 +1,39 @@
 package es.bocm.numbot.entities;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class FestivoTest {
-    @Test
-    void createFestivoWithNullDateThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> new Festivo(null,null, "desc1"));
+    static Stream<LocalDate> invalidDatesProvider() {
+        return Stream.of(null, // null date
+                LocalDate.of(2021, 1, 9), // Saturday
+                LocalDate.of(2021, 1, 10), // Sunday
+                LocalDate.of(2021, 1, 1), // January 1
+                LocalDate.of(2020, 12, 25), // December 25
+                LocalDate.of(2021, 4, 2)); // Good Friday
     }
 
-    @Test
-    void createFestivoWithDateOnSaturdayThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> new Festivo(null,
-                LocalDate.of(2021, 1, 9), "desc1"));
+    @ParameterizedTest
+    @MethodSource("invalidDatesProvider")
+    void createFestivoWithInvalidDateThrowsException(LocalDate invalidDate) {
+        assertThrows(IllegalArgumentException.class, () -> new Festivo(null, invalidDate, "desc1"));
     }
 
-    @Test
-    void createFestivoWithDateOnSundayThrowsException() {
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = { " ", "   ", "\t", "\n" })
+    void createFestivoWithNullOrBlankDescriptionThrowsException(String desc) {
         assertThrows(IllegalArgumentException.class, () -> new Festivo(null,
-                LocalDate.of(2021, 1, 10), "desc1"));
-    }
-
-    @Test
-    void createFestivoWithDateOnJuanuary1ThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> new Festivo(null,
-                LocalDate.of(2021, 1, 1), "desc1"));
-    }
-
-    @Test
-    void createFestivoWithDateOnDecember25ThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> new Festivo(null,
-                LocalDate.of(2020, 12, 25), "desc1"));
-    }
-
-    @Test
-    void createFestivoWithDateOnGoodFridayThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> new Festivo(null,
-                LocalDate.of(2021, 4, 2), "desc1"));
-    }
-
-    @Test
-    void createFestivoWithNullDescriptionThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> new Festivo(null,
-                LocalDate.of(2021, 1, 12), null));
-    }
-
-    @Test
-    void createFestivoWithBlankDescriptionThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> new Festivo(null,
-                LocalDate.of(2021, 1, 12), "   \t\n"));
+                LocalDate.of(2021, 1, 12), desc));
     }
 
     @Test
