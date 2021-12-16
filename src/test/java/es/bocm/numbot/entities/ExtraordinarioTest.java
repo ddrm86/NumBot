@@ -1,6 +1,8 @@
 package es.bocm.numbot.entities;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -8,16 +10,11 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ExtraordinarioTest {
-    @Test
-    void createExtraordinarioWithNegativeNumberThrowsException() {
+    @ParameterizedTest
+    @ValueSource(ints = { 0, -2 })
+    void createExtraordinarioWithInvalidNumberThrowsException(int number) {
         assertThrows(IllegalArgumentException.class, () -> new Extraordinario(null, LocalDate.of(2021,
-                1, 12), -2));
-    }
-
-    @Test
-    void createExtraordinarioWithNumberZeroThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> new Extraordinario(null, LocalDate.of(2021,
-                1, 12), 0));
+                1, 12), number));
     }
 
     @Test
