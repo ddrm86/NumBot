@@ -50,8 +50,4 @@ public final class CalcularNumBot {
         }
         return fechaAux.getDayOfMonth();
     }
-
-    public static void main(String[] args) {
-        System.out.println(getNumBot(LocalDate.of(2021,4,5), 0));
-    }
 }
