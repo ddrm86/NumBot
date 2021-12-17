@@ -45,7 +45,7 @@ public class FestivoResource {
                 return crearRespuestaFaltanFestivos();
             } else {
                 List<Map<String,String>> data = festivos.stream().map(Festivo::toMap).toList();
-                FestivoResponse response = new FestivoResponse(true, data);
+                FestivoResponse response = new FestivoResponse(data);
                 return crearRespuestaJson(Response.Status.OK, response);
             }
         }
@@ -82,7 +82,7 @@ public class FestivoResource {
                 return crearRespuestaErrorDesconocido();
             }
             List<Map<String,String>> data = festivos_nuevos.stream().map(Festivo::toMap).toList();
-            FestivoResponse response = new FestivoResponse(true, data);
+            FestivoResponse response = new FestivoResponse(data);
             return crearRespuestaJson(Response.Status.OK, response);
         }
     }

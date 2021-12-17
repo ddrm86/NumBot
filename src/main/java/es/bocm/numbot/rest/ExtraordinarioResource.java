@@ -41,7 +41,7 @@ public class ExtraordinarioResource {
                 return crearRespuestaErrorDesconocido();
             }
             List<Map<String, String>> data = extraordinarios.stream().map(Extraordinario::toMap).toList();
-            ExtraordinarioResponse response = new ExtraordinarioResponse(true, data);
+            ExtraordinarioResponse response = new ExtraordinarioResponse(data);
             return crearRespuestaJson(Response.Status.OK, response);
         }
     }
@@ -81,7 +81,7 @@ public class ExtraordinarioResource {
         } catch (Exception e) {
             return crearRespuestaErrorDesconocido();
         }
-        ExtraordinarioResponse response = new ExtraordinarioResponse(true, List.of(ext.toMap()));
+        ExtraordinarioResponse response = new ExtraordinarioResponse(List.of(ext.toMap()));
         return crearRespuestaJson(Response.Status.OK, response);
     }
 
