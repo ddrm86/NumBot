@@ -6,6 +6,7 @@ import es.bocm.numbot.entities.Festivo;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -90,5 +91,36 @@ class FestivoResourceTest {
         String json_res = response.readEntity(String.class);
         JsonObject res = JsonParser.parseString(json_res).getAsJsonObject();
         assertEquals(expected, res);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"asdf", "1", "12", "123", "123a"})
+    void producesCorrectInvalidYearPutResponse(String anno) {
+        String expected = "{\"exito\":false,\"data\":{\"error\":\"Año con formato incorrecto. " +
+                "El formato debe ser YYYY\"}}";
+        Client client = ClientBuilder.newClient();
+        Response response = client.target(TestPortProvider
+                .generateURL("/test/festivos/" + anno)).request(MediaType.APPLICATION_JSON)
+                .put(Entity.json(""));
+        assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+        String json_res = response.readEntity(String.class);
+        assertEquals(expected, json_res);
+    }
+
+    @Test
+    void producesCorrectInvalidDataResponse() {
+        String json_input = "[{\"descripcion\": \"Festivo en sábado\",  \"fecha\": \"01-08\"}]";
+        String expected = "{\"exito\":false,\"data\":{\"error\":\"Festivos con formato o fecha no válida. " +
+                "El formato debe ser [{\\\"descripcion\\\": \\\"descripcion festivo 1\\\", \\\"fecha\\\":" +
+                " \\\"MM-DD\\\"}, {\\\"descripcion\\\": \\\"descripcion festivo 2\\\", \\\"fecha\\\": \\\"MM-DD\\\"}]" +
+                ". No se deben incluir festivos que caen en sábado ni en domingo, o en los días que no hay boletín " +
+                "(1 de enero, 25 de diciembre y Viernes Santo)\"}}";
+        Client client = ClientBuilder.newClient();
+        Response response = client.target(TestPortProvider
+                        .generateURL("/test/festivos/1921")).request(MediaType.APPLICATION_JSON)
+                .put(Entity.json(json_input));
+        assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+        String json_res = response.readEntity(String.class);
+        assertEquals(expected, json_res);
     }
 }

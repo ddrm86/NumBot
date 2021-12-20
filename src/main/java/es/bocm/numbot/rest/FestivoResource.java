@@ -86,9 +86,7 @@ public class FestivoResource {
             } catch (Exception e) {
                 return crearRespuestaErrorDesconocido();
             }
-            List<Map<String,String>> data = festivos_nuevos.stream().map(Festivo::toMap).toList();
-            FestivoResponse response = new FestivoResponse(data);
-            return crearRespuestaJson(Response.Status.OK, response);
+            return crearRespuestaExitosa(festivos_nuevos);
         }
     }
 
