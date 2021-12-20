@@ -1,5 +1,7 @@
 package es.bocm.numbot.rest;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import es.bocm.numbot.entities.Extraordinario;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.client.Entity;
@@ -92,13 +94,14 @@ class ExtraordinarioResourceTest {
                 new Extraordinario(null, LocalDate.of(2021, 3, 1), 2),
                 new Extraordinario(null, LocalDate.of(2021, 5, 15), 1)
         );
-        String expected = "{\"exito\":true,\"data\":{\"extraordinarios\":[{\"fecha\":\"03-01\",\"numero\":\"2\"}," +
+        String expected_str = "{\"exito\":true,\"data\":{\"extraordinarios\":[{\"fecha\":\"03-01\",\"numero\":\"2\"}," +
                 "{\"fecha\":\"05-15\",\"numero\":\"1\"}]}}";
+        JsonObject expected = JsonParser.parseString(expected_str).getAsJsonObject();
         Response response = ExtraordinarioResource.crearRespuestaExitosa(exts);
         assertEquals(Response.Status.OK, response.getStatusInfo());
         String json_res = response.readEntity(String.class);
-        System.out.println(json_res);
-        assertEquals(expected, json_res);
+        JsonObject res = JsonParser.parseString(json_res).getAsJsonObject();
+        assertEquals(expected, res);
     }
 
     @ParameterizedTest
