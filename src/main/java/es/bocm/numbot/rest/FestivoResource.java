@@ -16,6 +16,7 @@ import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -44,11 +45,15 @@ public class FestivoResource {
             if (festivos.isEmpty()) {
                 return crearRespuestaFaltanFestivos();
             } else {
-                List<Map<String,String>> data = festivos.stream().map(Festivo::toMap).toList();
-                FestivoResponse response = new FestivoResponse(data);
-                return crearRespuestaJson(Response.Status.OK, response);
+                return crearRespuestaExitosa(festivos);
             }
         }
+    }
+
+    public static Response crearRespuestaExitosa(Collection<Festivo> extraordinarios) {
+        List<Map<String, String>> data = extraordinarios.stream().map(Festivo::toMap).toList();
+        FestivoResponse response = new FestivoResponse(data);
+        return crearRespuestaJson(Response.Status.OK, response);
     }
 
     @PUT
