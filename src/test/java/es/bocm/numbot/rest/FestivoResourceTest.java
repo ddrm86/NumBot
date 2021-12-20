@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FestivoResourceTest {
     private static UndertowJaxrsServer server;
+    private static Client client;
 
     @ApplicationPath("/test")
     public static class MyApp extends Application
@@ -44,10 +45,13 @@ class FestivoResourceTest {
     static void beforeAll() {
         server = new UndertowJaxrsServer().start();
         server.deployOldStyle(MyApp.class);
+        client = ClientBuilder.newClient();
+
     }
 
     @AfterAll
     static void afterAll() {
+        client.close();
         server.stop();
     }
 
@@ -56,7 +60,6 @@ class FestivoResourceTest {
     void producesCorrectInvalidYearResponse(String anno) {
         String expected = "{\"exito\":false,\"data\":{\"error\":\"Año con formato incorrecto. " +
                 "El formato debe ser YYYY\"}}";
-        Client client = ClientBuilder.newClient();
         Response response = client.target(TestPortProvider
                 .generateURL("/test/festivos/" + anno)).request(MediaType.APPLICATION_JSON).get();
         assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
@@ -68,7 +71,6 @@ class FestivoResourceTest {
     void producesCorrectUnknownErrorGetResponse() {
         String expected = "{\"exito\":false,\"data\":{\"error\":\"Error desconocido. con el administrador de sistemas" +
                 " para que revise la conexión con la BBDD y otras posibles causas.\"}}";
-        Client client = ClientBuilder.newClient();
         // Will not be able to connect to the database
         Response response = client.target(TestPortProvider
                 .generateURL("/test/festivos/1000")).request(MediaType.APPLICATION_JSON).get();
@@ -98,7 +100,6 @@ class FestivoResourceTest {
     void producesCorrectInvalidYearPutResponse(String anno) {
         String expected = "{\"exito\":false,\"data\":{\"error\":\"Año con formato incorrecto. " +
                 "El formato debe ser YYYY\"}}";
-        Client client = ClientBuilder.newClient();
         Response response = client.target(TestPortProvider
                 .generateURL("/test/festivos/" + anno)).request(MediaType.APPLICATION_JSON)
                 .put(Entity.json(""));
@@ -115,7 +116,6 @@ class FestivoResourceTest {
                 " \\\"MM-DD\\\"}, {\\\"descripcion\\\": \\\"descripcion festivo 2\\\", \\\"fecha\\\": \\\"MM-DD\\\"}]" +
                 ". No se deben incluir festivos que caen en sábado ni en domingo, o en los días que no hay boletín " +
                 "(1 de enero, 25 de diciembre y Viernes Santo)\"}}";
-        Client client = ClientBuilder.newClient();
         Response response = client.target(TestPortProvider
                         .generateURL("/test/festivos/1921")).request(MediaType.APPLICATION_JSON)
                 .put(Entity.json(json_input));

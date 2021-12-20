@@ -29,6 +29,7 @@ import java.util.Set;
 
 class ExtraordinarioResourceTest {
     private static UndertowJaxrsServer server;
+    private static Client client;
 
     @ApplicationPath("/test")
     public static class MyApp extends Application
@@ -46,10 +47,12 @@ class ExtraordinarioResourceTest {
     static void beforeAll() {
         server = new UndertowJaxrsServer().start();
         server.deployOldStyle(MyApp.class);
+        client = ClientBuilder.newClient();
     }
 
     @AfterAll
     static void afterAll() {
+        client.close();
         server.stop();
     }
 
@@ -58,7 +61,6 @@ class ExtraordinarioResourceTest {
     void producesCorrectInvalidYearResponse(String anno) {
         String expected = "{\"exito\":false,\"data\":{\"error\":\"Año con formato incorrecto. " +
                 "El formato debe ser YYYY\"}}";
-        Client client = ClientBuilder.newClient();
         Response response = client.target(TestPortProvider
                 .generateURL("/test/extraordinarios/" + anno)).request(MediaType.APPLICATION_JSON).get();
         assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
@@ -70,7 +72,6 @@ class ExtraordinarioResourceTest {
     void producesCorrectUnknownErrorGetResponse() {
         String expected = "{\"exito\":false,\"data\":{\"error\":\"Error desconocido. con el administrador de sistemas" +
                 " para que revise la conexión con la BBDD y otras posibles causas.\"}}";
-        Client client = ClientBuilder.newClient();
         // Will not be able to connect to the database
         Response response = client.target(TestPortProvider
                 .generateURL("/test/extraordinarios/1000")).request(MediaType.APPLICATION_JSON).get();
@@ -110,7 +111,6 @@ class ExtraordinarioResourceTest {
         String json_input = "";
         String expected = "{\"exito\":false,\"data\":{\"error\":\"Fecha errónea o con formato incorrecto. " +
                 "El formato debe ser YYYY-MM-DD\"}}";
-        Client client = ClientBuilder.newClient();
         Response response = client.target(TestPortProvider
                 .generateURL("/test/extraordinarios/" + date)).request(MediaType.APPLICATION_JSON)
                 .put(Entity.json(json_input));
@@ -126,7 +126,6 @@ class ExtraordinarioResourceTest {
         String expected = "{\"exito\":false,\"data\":{\"error\":\"Formato de número de boletines extraordinarios " +
                 "incorrecto. Debe ser un entero mayor o igual que cero. " +
                 "Ejemplo: {\\\"numero_extraordinarios\\\": \\\"1\\\"}\"}}";
-        Client client = ClientBuilder.newClient();
         Response response = client.target(TestPortProvider
                         .generateURL("/test/extraordinarios/1932-03-03")).request(MediaType.APPLICATION_JSON)
                 .put(Entity.json(json_input));
@@ -142,7 +141,6 @@ class ExtraordinarioResourceTest {
         String expected = "{\"exito\":false,\"data\":{\"error\":\"Formato de número de boletines extraordinarios " +
                 "incorrecto. Debe ser un entero mayor o igual que cero. " +
                 "Ejemplo: {\\\"numero_extraordinarios\\\": \\\"1\\\"}\"}}";
-        Client client = ClientBuilder.newClient();
         Response response = client.target(TestPortProvider
                         .generateURL("/test/extraordinarios/1932-03-03")).request(MediaType.APPLICATION_JSON)
                 .put(Entity.json(json_input));
