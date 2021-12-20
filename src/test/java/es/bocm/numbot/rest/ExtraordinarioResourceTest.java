@@ -2,6 +2,7 @@ package es.bocm.numbot.rest;
 
 import es.bocm.numbot.entities.Extraordinario;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
@@ -64,7 +65,7 @@ class ExtraordinarioResourceTest {
     }
 
     @Test
-    void producesCorrectUnknownErrorResponse() {
+    void producesCorrectUnknownErrorGetResponse() {
         String expected = "{\"exito\":false,\"data\":{\"error\":\"Error desconocido. con el administrador de sistemas" +
                 " para que revise la conexión con la BBDD y otras posibles causas.\"}}";
         Client client = ClientBuilder.newClient();
@@ -97,6 +98,53 @@ class ExtraordinarioResourceTest {
         assertEquals(Response.Status.OK, response.getStatusInfo());
         String json_res = response.readEntity(String.class);
         System.out.println(json_res);
+        assertEquals(expected, json_res);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"asdf", "1234", "2021-13-12", "2021-3-04", "2021-03-4", "2021-03-32", "2021-0a-12"})
+    void producesCorrectInvalidDateResponse(String date) {
+        String json_input = "";
+        String expected = "{\"exito\":false,\"data\":{\"error\":\"Fecha errónea o con formato incorrecto. " +
+                "El formato debe ser YYYY-MM-DD\"}}";
+        Client client = ClientBuilder.newClient();
+        Response response = client.target(TestPortProvider
+                .generateURL("/test/extraordinarios/" + date)).request(MediaType.APPLICATION_JSON)
+                .put(Entity.json(json_input));
+        assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+        String json_res = response.readEntity(String.class);
+        assertEquals(expected, json_res);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"asdf", "0", "-12", ""})
+    void producesCorrectInvalidNumExtsResponse(String numExts) {
+        String json_input = "{\"numero_extraordinarios\": \"" + numExts + "\"}";
+        String expected = "{\"exito\":false,\"data\":{\"error\":\"Formato de número de boletines extraordinarios " +
+                "incorrecto. Debe ser un entero mayor o igual que cero. " +
+                "Ejemplo: {\\\"numero_extraordinarios\\\": \\\"1\\\"}\"}}";
+        Client client = ClientBuilder.newClient();
+        Response response = client.target(TestPortProvider
+                        .generateURL("/test/extraordinarios/1932-03-03")).request(MediaType.APPLICATION_JSON)
+                .put(Entity.json(json_input));
+        assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+        String json_res = response.readEntity(String.class);
+        assertEquals(expected, json_res);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"asdf", "extraordinarios", "numro_extraordinarios"})
+    void producesCorrectInvalidJsonDataResponse(String key) {
+        String json_input = "{\"" + key + "\": \"3\"}";
+        String expected = "{\"exito\":false,\"data\":{\"error\":\"Formato de número de boletines extraordinarios " +
+                "incorrecto. Debe ser un entero mayor o igual que cero. " +
+                "Ejemplo: {\\\"numero_extraordinarios\\\": \\\"1\\\"}\"}}";
+        Client client = ClientBuilder.newClient();
+        Response response = client.target(TestPortProvider
+                        .generateURL("/test/extraordinarios/1932-03-03")).request(MediaType.APPLICATION_JSON)
+                .put(Entity.json(json_input));
+        assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
+        String json_res = response.readEntity(String.class);
         assertEquals(expected, json_res);
     }
 }

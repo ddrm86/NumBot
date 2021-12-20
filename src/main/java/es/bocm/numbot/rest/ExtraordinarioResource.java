@@ -83,8 +83,7 @@ public class ExtraordinarioResource {
         } catch (Exception e) {
             return crearRespuestaErrorDesconocido();
         }
-        ExtraordinarioResponse response = new ExtraordinarioResponse(List.of(ext.toMap()));
-        return crearRespuestaJson(Response.Status.OK, response);
+        return crearRespuestaExitosa(List.of(ext));
     }
 
 
