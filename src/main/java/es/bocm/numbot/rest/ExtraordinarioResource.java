@@ -14,9 +14,7 @@ import jakarta.ws.rs.core.Response;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static es.bocm.numbot.rest.RestUtils.*;
 
@@ -40,10 +38,14 @@ public class ExtraordinarioResource {
             } catch (Exception e) {
                 return crearRespuestaErrorDesconocido();
             }
-            List<Map<String, String>> data = extraordinarios.stream().map(Extraordinario::toMap).toList();
-            ExtraordinarioResponse response = new ExtraordinarioResponse(data);
-            return crearRespuestaJson(Response.Status.OK, response);
+            return crearRespuestaExitosa(extraordinarios);
         }
+    }
+
+    public static Response crearRespuestaExitosa(Collection<Extraordinario> extraordinarios) {
+        List<Map<String, String>> data = extraordinarios.stream().map(Extraordinario::toMap).toList();
+        ExtraordinarioResponse response = new ExtraordinarioResponse(data);
+        return crearRespuestaJson(Response.Status.OK, response);
     }
 
     @PUT
