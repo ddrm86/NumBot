@@ -5,6 +5,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import es.bocm.numbot.entities.Festivo;
 import es.bocm.numbot.entities.FestivoDao;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -21,6 +22,9 @@ import static es.bocm.numbot.rest.RestUtils.*;
 
 @Path("/festivos")
 public class FestivoResource {
+    @Inject
+    FestivoDao festDao;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{anno}")
@@ -30,7 +34,6 @@ public class FestivoResource {
         } else {
             List<Festivo> festivos;
             try {
-                FestivoDao festDao = new FestivoDao();
                 festivos = festDao.buscarFestivosPorAnno(Integer.parseInt(anno));
             } catch (Exception e) {
                 return crearRespuestaErrorDesconocido();
@@ -69,7 +72,6 @@ public class FestivoResource {
                 return crearRespuestaJson(Response.Status.BAD_REQUEST, response);
             }
             try {
-                FestivoDao festDao = new FestivoDao();
                 List<Festivo> festivos_antiguos = festDao.buscarFestivosPorAnno(Integer.parseInt(anno));
                 festDao.borrarFestivos(festivos_antiguos);
                 festDao.crearFestivos(festivos_nuevos);
