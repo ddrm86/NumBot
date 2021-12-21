@@ -1,20 +1,18 @@
 package es.bocm.numbot.entities;
 
-import jakarta.annotation.Resource;
+import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.*;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+@Stateless
 public class ExtraordinarioDao {
     @PersistenceContext(unitName = "pu-numbot")
     private EntityManager em;
-    @Resource
-    private UserTransaction userTransaction;
 
     public Optional<Extraordinario> buscarPorFecha(LocalDate fecha) {
         try {
@@ -34,11 +32,7 @@ public class ExtraordinarioDao {
                 .getResultList();
     }
 
-    public void crearOActualizar(Extraordinario extraordinario)
-            throws SystemException, NotSupportedException, HeuristicRollbackException,
-            HeuristicMixedException, RollbackException {
-        userTransaction.begin();
+    public void crearOActualizar(Extraordinario extraordinario) {
         em.merge(extraordinario);
-        userTransaction.commit();
     }
 }

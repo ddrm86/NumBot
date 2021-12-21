@@ -5,6 +5,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import es.bocm.numbot.entities.Extraordinario;
 import es.bocm.numbot.entities.ExtraordinarioDao;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -18,6 +19,9 @@ import static es.bocm.numbot.rest.RestUtils.*;
 
 @Path("/extraordinarios")
 public class ExtraordinarioResource {
+    @Inject
+    ExtraordinarioDao extDao;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{anno}")
@@ -27,7 +31,6 @@ public class ExtraordinarioResource {
         } else {
             List<Extraordinario> extraordinarios;
             try {
-                ExtraordinarioDao extDao = new ExtraordinarioDao();
                 extraordinarios = extDao.buscarExtraordinariosPorAnno(Integer.parseInt(anno));
             } catch (Exception e) {
                 return crearRespuestaErrorDesconocido();
@@ -36,7 +39,7 @@ public class ExtraordinarioResource {
         }
     }
 
-    public static Response crearRespuestaExitosa(Collection<Extraordinario> extraordinarios) {
+    private static Response crearRespuestaExitosa(Collection<Extraordinario> extraordinarios) {
         List<Map<String, String>> data = extraordinarios.stream().map(Extraordinario::toMap).toList();
         ExtraordinarioResponse response = new ExtraordinarioResponse(data);
         return crearRespuestaJson(Response.Status.OK, response);
@@ -63,7 +66,6 @@ public class ExtraordinarioResource {
                     " {\"numero_extraordinarios\": \"1\"}");
             return crearRespuestaJson(Response.Status.BAD_REQUEST, response);
         }
-        ExtraordinarioDao extDao = new ExtraordinarioDao();
         Optional<Extraordinario> opt_ext = extDao.buscarPorFecha(fecha);
         if (opt_ext.isPresent()) {
             ext = opt_ext.get();
