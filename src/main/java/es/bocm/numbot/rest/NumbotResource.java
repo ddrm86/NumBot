@@ -6,6 +6,7 @@ import es.bocm.numbot.entities.Extraordinario;
 import es.bocm.numbot.entities.ExtraordinarioDao;
 import es.bocm.numbot.entities.Festivo;
 import es.bocm.numbot.entities.FestivoDao;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -21,6 +22,12 @@ import static es.bocm.numbot.rest.RestUtils.*;
 
 @Path("/numero-boletin")
 public class NumbotResource {
+    @Inject
+    ExtraordinarioDao extDao;
+
+    @Inject
+    FestivoDao festDao;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{fecha}")
@@ -35,9 +42,7 @@ public class NumbotResource {
         List<Extraordinario> extAnno;
         List<Festivo> festivosAnno;
         try {
-            ExtraordinarioDao extDao = new ExtraordinarioDao();
             extAnno = extDao.buscarExtraordinariosPorAnno(anno);
-            FestivoDao festDao = new FestivoDao();
             festivosAnno = festDao.buscarFestivosPorAnno(anno);
         } catch (Exception e) {
             return crearRespuestaErrorDesconocido();
