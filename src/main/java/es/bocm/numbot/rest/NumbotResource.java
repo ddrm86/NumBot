@@ -3,9 +3,10 @@ package es.bocm.numbot.rest;
 import es.bocm.numbot.calculations.CalcUtils;
 import es.bocm.numbot.calculations.CalcularNumBot;
 import es.bocm.numbot.entities.Extraordinario;
+import es.bocm.numbot.entities.ExtraordinarioDao;
 import es.bocm.numbot.entities.Festivo;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import es.bocm.numbot.entities.FestivoDao;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -21,8 +22,11 @@ import static es.bocm.numbot.rest.RestUtils.*;
 
 @Path("/numero-boletin")
 public class NumbotResource {
-    @PersistenceContext(unitName = "pu-numbot")
-    private EntityManager em;
+    @Inject
+    ExtraordinarioDao extDao;
+
+    @Inject
+    FestivoDao festDao;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -38,8 +42,8 @@ public class NumbotResource {
         List<Extraordinario> extAnno;
         List<Festivo> festivosAnno;
         try {
-            extAnno = RestUtils.buscarExtraordinariosPorAnno(em, anno);
-            festivosAnno = RestUtils.buscarFestivosPorAnno(em, anno);
+            extAnno = extDao.buscarExtraordinariosPorAnno(anno);
+            festivosAnno = festDao.buscarFestivosPorAnno(anno);
         } catch (Exception e) {
             return crearRespuestaErrorDesconocido();
         }

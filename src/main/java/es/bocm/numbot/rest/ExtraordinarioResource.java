@@ -4,9 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import es.bocm.numbot.entities.Extraordinario;
-import jakarta.annotation.Resource;
-import jakarta.persistence.*;
-import jakarta.transaction.UserTransaction;
+import es.bocm.numbot.entities.ExtraordinarioDao;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -20,10 +19,8 @@ import static es.bocm.numbot.rest.RestUtils.*;
 
 @Path("/extraordinarios")
 public class ExtraordinarioResource {
-    @PersistenceContext(unitName = "pu-numbot")
-    private EntityManager em;
-    @Resource
-    private UserTransaction userTransaction;
+    @Inject
+    ExtraordinarioDao extDao;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -34,7 +31,7 @@ public class ExtraordinarioResource {
         } else {
             List<Extraordinario> extraordinarios;
             try {
-                extraordinarios = buscarExtraordinariosPorAnno(em, Integer.parseInt(anno));
+                extraordinarios = extDao.buscarExtraordinariosPorAnno(Integer.parseInt(anno));
             } catch (Exception e) {
                 return crearRespuestaErrorDesconocido();
             }
@@ -42,7 +39,7 @@ public class ExtraordinarioResource {
         }
     }
 
-    public static Response crearRespuestaExitosa(Collection<Extraordinario> extraordinarios) {
+    private static Response crearRespuestaExitosa(Collection<Extraordinario> extraordinarios) {
         List<Map<String, String>> data = extraordinarios.stream().map(Extraordinario::toMap).toList();
         ExtraordinarioResponse response = new ExtraordinarioResponse(data);
         return crearRespuestaJson(Response.Status.OK, response);
@@ -69,7 +66,7 @@ public class ExtraordinarioResource {
                     " {\"numero_extraordinarios\": \"1\"}");
             return crearRespuestaJson(Response.Status.BAD_REQUEST, response);
         }
-        Optional<Extraordinario> opt_ext = buscarPorFecha(fecha);
+        Optional<Extraordinario> opt_ext = extDao.buscarPorFecha(fecha);
         if (opt_ext.isPresent()) {
             ext = opt_ext.get();
             ext.setNumero(ext_candidato.getNumero());
@@ -77,32 +74,17 @@ public class ExtraordinarioResource {
             ext = ext_candidato;
         }
         try {
-            userTransaction.begin();
-            em.merge(ext);
-            userTransaction.commit();
+            extDao.crearOActualizar(ext);
         } catch (Exception e) {
             return crearRespuestaErrorDesconocido();
         }
         return crearRespuestaExitosa(List.of(ext));
     }
 
-
     private Extraordinario crearExtraordinario(LocalDate fecha, String ext_json) {
         Type type = new TypeToken<Map<String, Integer>>() {
         }.getType();
         Map<String, Integer> num_ext = new Gson().fromJson(ext_json, type);
         return new Extraordinario(null, fecha, num_ext.get("numero_extraordinarios"));
-    }
-
-    private Optional<Extraordinario> buscarPorFecha(LocalDate fecha) {
-        try {
-            Extraordinario ext =
-                    em.createQuery("select e from Extraordinario e where e.fecha = :fecha", Extraordinario.class)
-                            .setParameter("fecha", fecha)
-                            .getSingleResult();
-            return Optional.of(ext);
-        } catch (NoResultException e) {
-            return Optional.empty();
-        }
     }
 }

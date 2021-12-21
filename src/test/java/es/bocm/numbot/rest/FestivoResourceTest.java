@@ -3,62 +3,37 @@ package es.bocm.numbot.rest;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import es.bocm.numbot.entities.Festivo;
-import jakarta.ws.rs.ApplicationPath;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.Application;
-import jakarta.ws.rs.core.MediaType;
+import es.bocm.numbot.entities.FestivoDao;
+import jakarta.persistence.PersistenceException;
 import jakarta.ws.rs.core.Response;
-import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
-import org.jboss.resteasy.test.TestPortProvider;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class FestivoResourceTest {
-    private static UndertowJaxrsServer server;
-    private static Client client;
+    @Mock
+    private FestivoDao mockFestDao;
 
-    @ApplicationPath("/test")
-    public static class MyApp extends Application
-    {
-        @Override
-        public Set<Class<?>> getClasses()
-        {
-            HashSet<Class<?>> classes = new HashSet<>();
-            classes.add(FestivoResource.class);
-            return classes;
-        }
-    }
-
-    @BeforeAll
-    static void beforeAll() {
-        server = new UndertowJaxrsServer().start();
-        server.deployOldStyle(MyApp.class);
-        client = ClientBuilder.newClient();
-
-    }
-
-    @AfterAll
-    static void afterAll() {
-        client.close();
-        server.stop();
-    }
+    @InjectMocks
+    private FestivoResource festRest;
 
     @Test
     void producesCorrectInvalidYearResponse() {
         String expected = "{\"exito\":false,\"data\":{\"error\":\"Año con formato incorrecto. " +
                 "El formato debe ser YYYY\"}}";
-        Response response = client.target(TestPortProvider
-                .generateURL("/test/festivos/badYear")).request(MediaType.APPLICATION_JSON).get();
+        Response response = festRest.getFestivos("badYear");
         assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
         String json_res = response.readEntity(String.class);
         assertEquals(expected, json_res);
@@ -66,26 +41,41 @@ class FestivoResourceTest {
 
     @Test
     void producesCorrectUnknownErrorGetResponse() {
+        when(mockFestDao.buscarFestivosPorAnno(anyInt())).thenThrow(PersistenceException.class);
         String expected = "{\"exito\":false,\"data\":{\"error\":\"Error desconocido. con el administrador de sistemas" +
                 " para que revise la conexión con la BBDD y otras posibles causas.\"}}";
-        // Will not be able to connect to the database
-        Response response = client.target(TestPortProvider
-                .generateURL("/test/festivos/1000")).request(MediaType.APPLICATION_JSON).get();
+        Response response = festRest.getFestivos("2021");
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
         String json_res = response.readEntity(String.class);
         assertEquals(expected, json_res);
     }
 
     @Test
+    void producesCorrectResponseWithNoData() {
+        int anno = 2021;
+        when(mockFestDao.buscarFestivosPorAnno(anno)).thenReturn(Collections.emptyList());
+        String expected_str = "{\"exito\":false,\"data\":{\"error\":\"Faltan datos en la BBDD para procesar " +
+                "la petición: no están establecidos los festivos de este año.\"}}";
+        JsonObject expected = JsonParser.parseString(expected_str).getAsJsonObject();
+        Response response = festRest.getFestivos(String.valueOf(anno));
+        assertEquals(Response.Status.NOT_FOUND, response.getStatusInfo());
+        String json_res = response.readEntity(String.class);
+        JsonObject res = JsonParser.parseString(json_res).getAsJsonObject();
+        assertEquals(expected, res);
+    }
+
+    @Test
     void producesCorrectResponseWithData() {
+        int anno = 2021;
         List<Festivo> fests = List.of(
                 new Festivo(null, LocalDate.of(2021, 3, 1), "desc1"),
                 new Festivo(null, LocalDate.of(2021, 5, 14), "desc2")
         );
+        when(mockFestDao.buscarFestivosPorAnno(anno)).thenReturn(fests);
         String expected_str = "{\"exito\":true,\"data\":{\"festivos\":[{\"fecha\":\"03-01\"," +
                 "\"descripcion\":\"desc1\"},{\"fecha\":\"05-14\",\"descripcion\":\"desc2\"}]}}";
         JsonObject expected = JsonParser.parseString(expected_str).getAsJsonObject();
-        Response response = FestivoResource.crearRespuestaExitosa(fests);
+        Response response = festRest.getFestivos(String.valueOf(anno));
         assertEquals(Response.Status.OK, response.getStatusInfo());
         String json_res = response.readEntity(String.class);
         JsonObject res = JsonParser.parseString(json_res).getAsJsonObject();
@@ -96,9 +86,7 @@ class FestivoResourceTest {
     void producesCorrectInvalidYearPutResponse() {
         String expected = "{\"exito\":false,\"data\":{\"error\":\"Año con formato incorrecto. " +
                 "El formato debe ser YYYY\"}}";
-        Response response = client.target(TestPortProvider
-                .generateURL("/test/festivos/badYear")).request(MediaType.APPLICATION_JSON)
-                .put(Entity.json(""));
+        Response response = festRest.createOrUpdateFestivos("badYear", "");
         assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
         String json_res = response.readEntity(String.class);
         assertEquals(expected, json_res);
@@ -112,11 +100,48 @@ class FestivoResourceTest {
                 " \\\"MM-DD\\\"}, {\\\"descripcion\\\": \\\"descripcion festivo 2\\\", \\\"fecha\\\": \\\"MM-DD\\\"}]" +
                 ". No se deben incluir festivos que caen en sábado ni en domingo, o en los días que no hay boletín " +
                 "(1 de enero, 25 de diciembre y Viernes Santo)\"}}";
-        Response response = client.target(TestPortProvider
-                        .generateURL("/test/festivos/1921")).request(MediaType.APPLICATION_JSON)
-                .put(Entity.json(json_input));
+        Response response = festRest.createOrUpdateFestivos("1921", json_input);
         assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
         String json_res = response.readEntity(String.class);
         assertEquals(expected, json_res);
+    }
+
+    @Test
+    void producesCorrectUnknownErrorPutResponse() {
+        String json_input = "[{\"descripcion\": \"Festivo en fecha correcta\",  \"fecha\": \"12-06\"}]";
+        when(mockFestDao.buscarFestivosPorAnno(anyInt())).thenReturn(Collections.emptyList());
+        doThrow(PersistenceException.class).when(mockFestDao).borrarFestivos(anyCollection());
+        String expected = "{\"exito\":false,\"data\":{\"error\":\"Error desconocido. con el administrador de sistemas" +
+                " para que revise la conexión con la BBDD y otras posibles causas.\"}}";
+        Response response = festRest.createOrUpdateFestivos("2021", json_input);
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
+        String json_res = response.readEntity(String.class);
+        assertEquals(expected, json_res);
+    }
+
+    @Test
+    void producesCorrectPutResponse() {
+        int anno = 2021;
+        String json_input = "[{\"descripcion\": \"Festivo en fecha correcta\",  \"fecha\": \"12-06\"}]";
+        Festivo fest = new Festivo(null, LocalDate.of(anno, 12, 6), "descripcion");
+        List<Festivo> festivos = List.of(fest);
+
+        when(mockFestDao.buscarFestivosPorAnno(anyInt())).thenReturn(festivos);
+        doNothing().when(mockFestDao).borrarFestivos(anyCollection());
+        doNothing().when(mockFestDao).crearFestivos(anyCollection());
+
+        String expected_str = "{\"exito\":true,\"data\":{\"festivos\":[{\"descripcion\":" +
+                "\"Festivo en fecha correcta\",\"fecha\":\"12-06\"}]}}";
+        JsonObject expected = JsonParser.parseString(expected_str).getAsJsonObject();
+
+        Response response = festRest.createOrUpdateFestivos(String.valueOf(anno), json_input);
+        assertEquals(Response.Status.OK, response.getStatusInfo());
+        verify(mockFestDao).buscarFestivosPorAnno(anno);
+        verify(mockFestDao).borrarFestivos(festivos);
+        verify(mockFestDao).crearFestivos(anyCollection());
+
+        String json_res = response.readEntity(String.class);
+        JsonObject res = JsonParser.parseString(json_res).getAsJsonObject();
+        assertEquals(expected, res);
     }
 }
