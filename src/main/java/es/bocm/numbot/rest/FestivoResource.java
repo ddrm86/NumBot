@@ -46,7 +46,7 @@ public class FestivoResource {
         }
     }
 
-    public static Response crearRespuestaExitosa(Collection<Festivo> extraordinarios) {
+    private static Response crearRespuestaExitosa(Collection<Festivo> extraordinarios) {
         List<Map<String, String>> data = extraordinarios.stream().map(Festivo::toMap).toList();
         FestivoResponse response = new FestivoResponse(data);
         return crearRespuestaJson(Response.Status.OK, response);
