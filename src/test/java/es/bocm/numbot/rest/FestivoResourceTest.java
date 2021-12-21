@@ -68,8 +68,8 @@ class FestivoResourceTest {
     void producesCorrectResponseWithData() {
         int anno = 2021;
         List<Festivo> fests = List.of(
-                new Festivo(null, LocalDate.of(2021, 3, 1), "desc1"),
-                new Festivo(null, LocalDate.of(2021, 5, 14), "desc2")
+                new Festivo(null, LocalDate.of(anno, 3, 1), "desc1"),
+                new Festivo(null, LocalDate.of(anno, 5, 14), "desc2")
         );
         when(mockFestDao.buscarFestivosPorAnno(anno)).thenReturn(fests);
         String expected_str = "{\"exito\":true,\"data\":{\"festivos\":[{\"fecha\":\"03-01\"," +

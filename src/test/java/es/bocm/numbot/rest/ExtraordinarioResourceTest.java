@@ -67,8 +67,8 @@ class ExtraordinarioResourceTest {
     void producesCorrectResponseWithData() {
         int anno = 2021;
         List<Extraordinario> exts = List.of(
-                new Extraordinario(null, LocalDate.of(2021, 3, 1), 2),
-                new Extraordinario(null, LocalDate.of(2021, 5, 15), 1)
+                new Extraordinario(null, LocalDate.of(anno, 3, 1), 2),
+                new Extraordinario(null, LocalDate.of(anno, 5, 15), 1)
         );
         when(mockExtDao.buscarExtraordinariosPorAnno(anno)).thenReturn(exts);
         String expected_str = "{\"exito\":true,\"data\":{\"extraordinarios\":[{\"fecha\":\"03-01\",\"numero\":\"2\"}," +
