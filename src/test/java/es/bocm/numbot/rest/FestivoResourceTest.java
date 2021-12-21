@@ -15,8 +15,6 @@ import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -55,13 +53,12 @@ class FestivoResourceTest {
         server.stop();
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"asdf", "1", "12", "123", "123a"})
-    void producesCorrectInvalidYearResponse(String anno) {
+    @Test
+    void producesCorrectInvalidYearResponse() {
         String expected = "{\"exito\":false,\"data\":{\"error\":\"Año con formato incorrecto. " +
                 "El formato debe ser YYYY\"}}";
         Response response = client.target(TestPortProvider
-                .generateURL("/test/festivos/" + anno)).request(MediaType.APPLICATION_JSON).get();
+                .generateURL("/test/festivos/badYear")).request(MediaType.APPLICATION_JSON).get();
         assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
         String json_res = response.readEntity(String.class);
         assertEquals(expected, json_res);
@@ -95,13 +92,12 @@ class FestivoResourceTest {
         assertEquals(expected, res);
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"asdf", "1", "12", "123", "123a"})
-    void producesCorrectInvalidYearPutResponse(String anno) {
+    @Test
+    void producesCorrectInvalidYearPutResponse() {
         String expected = "{\"exito\":false,\"data\":{\"error\":\"Año con formato incorrecto. " +
                 "El formato debe ser YYYY\"}}";
         Response response = client.target(TestPortProvider
-                .generateURL("/test/festivos/" + anno)).request(MediaType.APPLICATION_JSON)
+                .generateURL("/test/festivos/badYear")).request(MediaType.APPLICATION_JSON)
                 .put(Entity.json(""));
         assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
         String json_res = response.readEntity(String.class);

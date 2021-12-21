@@ -56,13 +56,12 @@ class ExtraordinarioResourceTest {
         server.stop();
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"asdf", "1", "12", "123", "123a"})
-    void producesCorrectInvalidYearResponse(String anno) {
+    @Test
+    void producesCorrectInvalidYearResponse() {
         String expected = "{\"exito\":false,\"data\":{\"error\":\"Año con formato incorrecto. " +
                 "El formato debe ser YYYY\"}}";
         Response response = client.target(TestPortProvider
-                .generateURL("/test/extraordinarios/" + anno)).request(MediaType.APPLICATION_JSON).get();
+                .generateURL("/test/extraordinarios/badYear")).request(MediaType.APPLICATION_JSON).get();
         assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
         String json_res = response.readEntity(String.class);
         assertEquals(expected, json_res);
@@ -105,14 +104,13 @@ class ExtraordinarioResourceTest {
         assertEquals(expected, res);
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"asdf", "1234", "2021-13-12", "2021-3-04", "2021-03-4", "2021-03-32", "2021-0a-12"})
-    void producesCorrectInvalidDateResponse(String date) {
+    @Test
+    void producesCorrectInvalidDateResponse() {
         String json_input = "";
         String expected = "{\"exito\":false,\"data\":{\"error\":\"Fecha errónea o con formato incorrecto. " +
                 "El formato debe ser YYYY-MM-DD\"}}";
         Response response = client.target(TestPortProvider
-                .generateURL("/test/extraordinarios/" + date)).request(MediaType.APPLICATION_JSON)
+                .generateURL("/test/extraordinarios/badDate")).request(MediaType.APPLICATION_JSON)
                 .put(Entity.json(json_input));
         assertEquals(Response.Status.BAD_REQUEST, response.getStatusInfo());
         String json_res = response.readEntity(String.class);
