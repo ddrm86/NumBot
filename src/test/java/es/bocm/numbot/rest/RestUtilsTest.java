@@ -1,6 +1,5 @@
 package es.bocm.numbot.rest;
 
-import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -20,13 +19,5 @@ class RestUtilsTest {
     @ValueSource(strings = {"\n", "word", "20", "1", "12345", "932", "123a", "a123", "12a3"})
     void rejectsIncorrectYears(String year) {
         assertTrue(RestUtils.esAnnoNoValido(year));
-    }
-
-    @Test
-    void buscarFestivosPorAnno() {
-    }
-
-    @Test
-    void buscarExtraordinariosPorAnno() {
     }
 }
