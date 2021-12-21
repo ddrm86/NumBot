@@ -3,6 +3,7 @@ package es.bocm.numbot.rest;
 import es.bocm.numbot.calculations.CalcUtils;
 import es.bocm.numbot.calculations.CalcularNumBot;
 import es.bocm.numbot.entities.Extraordinario;
+import es.bocm.numbot.entities.ExtraordinarioDao;
 import es.bocm.numbot.entities.Festivo;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -38,7 +39,8 @@ public class NumbotResource {
         List<Extraordinario> extAnno;
         List<Festivo> festivosAnno;
         try {
-            extAnno = RestUtils.buscarExtraordinariosPorAnno(em, anno);
+            ExtraordinarioDao extDao = new ExtraordinarioDao();
+            extAnno = extDao.buscarExtraordinariosPorAnno(anno);
             festivosAnno = RestUtils.buscarFestivosPorAnno(em, anno);
         } catch (Exception e) {
             return crearRespuestaErrorDesconocido();

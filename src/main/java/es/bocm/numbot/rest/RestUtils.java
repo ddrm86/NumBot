@@ -1,7 +1,6 @@
 package es.bocm.numbot.rest;
 
 import com.google.gson.Gson;
-import es.bocm.numbot.entities.Extraordinario;
 import es.bocm.numbot.entities.Festivo;
 import jakarta.persistence.EntityManager;
 import jakarta.ws.rs.core.MediaType;
@@ -64,9 +63,4 @@ public final class RestUtils {
                 .getResultList();
     }
 
-    public static List<Extraordinario> buscarExtraordinariosPorAnno(EntityManager em, int anno) {
-        return em.createNamedQuery("Extraordinario.buscarPorAnno", Extraordinario.class)
-                .setParameter("anno", anno)
-                .getResultList();
-    }
 }
