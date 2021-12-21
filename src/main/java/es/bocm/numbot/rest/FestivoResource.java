@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import es.bocm.numbot.entities.Festivo;
-import jakarta.annotation.Resource;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.UserTransaction;
+import es.bocm.numbot.entities.FestivoDao;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -24,11 +21,6 @@ import static es.bocm.numbot.rest.RestUtils.*;
 
 @Path("/festivos")
 public class FestivoResource {
-    @PersistenceContext(unitName = "pu-numbot")
-    private EntityManager em;
-    @Resource
-    private UserTransaction userTransaction;
-
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{anno}")
@@ -38,7 +30,8 @@ public class FestivoResource {
         } else {
             List<Festivo> festivos;
             try {
-                festivos = buscarFestivosPorAnno(em, Integer.parseInt(anno));
+                FestivoDao festDao = new FestivoDao();
+                festivos = festDao.buscarFestivosPorAnno(Integer.parseInt(anno));
             } catch (Exception e) {
                 return crearRespuestaErrorDesconocido();
             }
@@ -76,13 +69,10 @@ public class FestivoResource {
                 return crearRespuestaJson(Response.Status.BAD_REQUEST, response);
             }
             try {
-                userTransaction.begin();
-                List<Festivo> festivos_antiguos = buscarFestivosPorAnno(em, Integer.parseInt(anno));
-                festivos_antiguos.forEach(f -> em.remove(f));
-                userTransaction.commit();
-                userTransaction.begin();
-                festivos_nuevos.forEach(f -> em.merge(f));
-                userTransaction.commit();
+                FestivoDao festDao = new FestivoDao();
+                List<Festivo> festivos_antiguos = festDao.buscarFestivosPorAnno(Integer.parseInt(anno));
+                festDao.borrarFestivos(festivos_antiguos);
+                festDao.crearFestivos(festivos_nuevos);
             } catch (Exception e) {
                 return crearRespuestaErrorDesconocido();
             }
