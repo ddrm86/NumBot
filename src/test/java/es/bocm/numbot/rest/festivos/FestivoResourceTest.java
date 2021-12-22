@@ -1,4 +1,4 @@
-package es.bocm.numbot.rest;
+package es.bocm.numbot.rest.festivos;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

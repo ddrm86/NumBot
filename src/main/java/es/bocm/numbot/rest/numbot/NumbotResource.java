@@ -1,4 +1,4 @@
-package es.bocm.numbot.rest;
+package es.bocm.numbot.rest.numbot;
 
 import es.bocm.numbot.calculations.CalcUtils;
 import es.bocm.numbot.calculations.CalcularNumBot;

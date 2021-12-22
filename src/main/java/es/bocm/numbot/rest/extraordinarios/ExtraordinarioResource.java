@@ -1,10 +1,11 @@
-package es.bocm.numbot.rest;
+package es.bocm.numbot.rest.extraordinarios;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import es.bocm.numbot.entities.Extraordinario;
 import es.bocm.numbot.entities.ExtraordinarioDao;
+import es.bocm.numbot.rest.ErrorResponse;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -13,7 +14,10 @@ import jakarta.ws.rs.core.Response;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static es.bocm.numbot.rest.RestUtils.*;
 

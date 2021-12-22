@@ -1,10 +1,10 @@
-package es.bocm.numbot.rest;
+package es.bocm.numbot.rest.numbot;
 
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class NumbotResponseTest {
     @Test

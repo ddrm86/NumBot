@@ -1,4 +1,6 @@
-package es.bocm.numbot.rest;
+package es.bocm.numbot.rest.festivos;
+
+import es.bocm.numbot.rest.NumbotApiResponse;
 
 import java.util.List;
 import java.util.Map;

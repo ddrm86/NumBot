@@ -1,10 +1,11 @@
-package es.bocm.numbot.rest;
+package es.bocm.numbot.rest.festivos;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import es.bocm.numbot.entities.Festivo;
 import es.bocm.numbot.entities.FestivoDao;
+import es.bocm.numbot.rest.ErrorResponse;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
