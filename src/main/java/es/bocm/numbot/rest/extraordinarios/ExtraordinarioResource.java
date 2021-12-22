@@ -21,11 +21,51 @@ import java.util.Optional;
 
 import static es.bocm.numbot.rest.RestUtils.*;
 
+/**
+ * <p>Recurso REST para la consulta y actualización de los boletines extraordinarios.<p>
+ *
+ * Ejemplo de consulta:
+ *
+ * <pre>
+ * GET: /extraordinarios/2021
+ *
+ * HTTP/1.1 200 OK
+ * Content-Type: application/json
+ * {
+ * 	"exito": "true",
+ * 	"data": {
+ * 		"extraordinarios": "[{"fecha": "03-20", "numero": "1"}, {"fecha": "04-16", "numero": "1"}]"
+ * 	}
+ * }
+ * </pre>
+ *
+ * Ejemplo de actualización:
+ *
+ * <pre>
+ * PUT: /extraordinarios/2021-03-20
+ * {"numero_extraordinarios": "3"}
+ *
+ * HTTP/1.1 200 OK
+ * Content-Type: application/json
+ * {
+ * 	"exito": "true",
+ * 	"data": {
+ * 		"extraordinarios": "[{"fecha": "03-20", "numero": "3"}]"
+ *  }
+ * }
+ * </pre>
+ */
 @Path("/extraordinarios")
 public class ExtraordinarioResource {
     @Inject
     ExtraordinarioDao extDao;
 
+    /**
+     * Obtiene información sobre los boletines extraordinarios publicados en un año.
+     *
+     * @param anno el año en formato YYYY.
+     * @return la información solicitada o mensaje de error.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{anno}")
@@ -43,12 +83,25 @@ public class ExtraordinarioResource {
         }
     }
 
+    /**
+     * Crea una respuesta exitosa, es decir, se pudo obtener la información solicitada.
+     *
+     * @param extraordinarios los boletines extraordinarios a incluir en la respuesta.
+     * @return la información solicitada.
+     */
     private static Response crearRespuestaExitosa(Collection<Extraordinario> extraordinarios) {
         List<Map<String, String>> data = extraordinarios.stream().map(Extraordinario::toMap).toList();
         ExtraordinarioResponse response = new ExtraordinarioResponse(data);
         return crearRespuestaJson(Response.Status.OK, response);
     }
 
+    /**
+     * Actualiza el número de boletines extraordinarios de una fecha determinada.
+     *
+     * @param fecha_str la fecha en formato YYYY-MM-DD.
+     * @param ext_json el nuevo número de boletines extraordinarios para esa fecha.
+     * @return la información actualizada o mensaje de error.
+     */
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -85,6 +138,13 @@ public class ExtraordinarioResource {
         return crearRespuestaExitosa(List.of(ext));
     }
 
+    /**
+     * Crea un objeto Extraordinario con la información obtenida desde el endpoint.
+     *
+     * @param fecha la fecha.
+     * @param ext_json el número de boletines extraordinarios para esa fecha en el formato de entrada del endpoint.
+     * @return el objeto Extraordinario creado.
+     */
     private Extraordinario crearExtraordinario(LocalDate fecha, String ext_json) {
         Type type = new TypeToken<Map<String, Integer>>() {
         }.getType();

@@ -21,11 +21,59 @@ import java.util.Map;
 
 import static es.bocm.numbot.rest.RestUtils.*;
 
+/**
+ * <p>Recurso REST para la consulta y actualización de los días festivos de un año.<p>
+ *
+ * Ejemplo de consulta:
+ *
+ * <pre>
+ * GET: /festivos/2021
+ *
+ * HTTP/1.1 200 OK
+ * Content-Type: application/json
+ * {
+ *  "exito": "true",
+ *  "data": {
+ *      "festivos":
+ *          "[{"descripcion": "Reyes Magos",  "fecha": "01-06"},
+ *          {"descripcion": "Constitucion", "fecha": "12-06"},
+ *          {"descripcion": "Inmaculada",   "fecha": "12-08"}]"
+ *  }
+ * }
+ * </pre>
+ *
+ * Ejemplo de actualización:
+ *
+ * <pre>
+ * PUT: /festivos/2021
+ * [{"descripcion": "Reyes Magos",  "fecha": "06-01"}, {"descripcion": "Constitucion", "fecha": "12-06"}]
+ *
+ * HTTP/1.1 200 OK
+ * Content-Type: application/json
+ * {
+ * 	"exito": "true",
+ * 	"data": {
+ * 		"festivos":
+ * 	        "[{"descripcion": "Reyes Magos",  "fecha": "06-01"},
+ *          {"descripcion": "Constitucion", "fecha": "12-06"}]"
+ * 	}
+ * }
+ * </pre>
+ *
+ * <b>Se borran los festivos anteriores para el año y se reemplazan con los nuevos.</b>
+ *
+ */
 @Path("/festivos")
 public class FestivoResource {
     @Inject
     FestivoDao festDao;
 
+    /**
+     * Obtiene información sobre los festivos de un año.
+     *
+     * @param anno el año en formato YYYY.
+     * @return la información solicitada o mensaje de error.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{anno}")
@@ -47,12 +95,25 @@ public class FestivoResource {
         }
     }
 
-    private static Response crearRespuestaExitosa(Collection<Festivo> extraordinarios) {
-        List<Map<String, String>> data = extraordinarios.stream().map(Festivo::toMap).toList();
+    /**
+     * Crea una respuesta exitosa, es decir, se pudo obtener la información solicitada.
+     *
+     * @param festivos los festivos a incluir en la respuesta.
+     * @return la información solicitada.
+     */
+    private static Response crearRespuestaExitosa(Collection<Festivo> festivos) {
+        List<Map<String, String>> data = festivos.stream().map(Festivo::toMap).toList();
         FestivoResponse response = new FestivoResponse(data);
         return crearRespuestaJson(Response.Status.OK, response);
     }
 
+    /**
+     * Actualiza los festivos de un año determinado, borrando los anteriores si existen.
+     *
+     * @param anno el año en formato YYYY.
+     * @param festivos_json los nuevos festivos para ese año.
+     * @return la información actualizada o mensaje de error.
+     */
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -83,6 +144,13 @@ public class FestivoResource {
         }
     }
 
+    /**
+     * Crea los objetos Festivo con la información obtenida desde el endpoint.
+     *
+     * @param anno el año en formato YYYY.
+     * @param festivos_json los festivos para ese año en el formato de entrada del endpoint.
+     * @return los objetos Festivo creados.
+     */
     private List<Festivo> crearFestivos(String anno, String festivos_json) {
         List<Festivo> festivos = new ArrayList<>();
         Type type = new TypeToken<List<Map<String, String>>>(){}.getType();

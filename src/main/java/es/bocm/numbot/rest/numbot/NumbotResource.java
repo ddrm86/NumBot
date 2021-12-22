@@ -20,6 +20,26 @@ import java.util.List;
 
 import static es.bocm.numbot.rest.RestUtils.*;
 
+/**
+ * <p>Recurso REST que proporciona información sobre la edición del Boletín.
+ * Consultar {@link es.bocm.numbot.rest.NumbotApplication}.<p>
+ *
+ * Ejemplo de uso:
+ *
+ * <pre>
+ * GET: /numero-boletin/2021-12-07
+ *
+ * HTTP/1.1 200 OK
+ * Content-Type: application/json
+ * {
+ * 	"exito": "true",
+ * 	"data": {
+ * 		"numero_boletin": "301",
+ * 		"numero_boletines_en_no_laboral_seguidos": "1"
+ *  }
+ * }
+ * </pre>
+ */
 @Path("/numero-boletin")
 public class NumbotResource {
     @Inject
@@ -28,6 +48,13 @@ public class NumbotResource {
     @Inject
     FestivoDao festDao;
 
+    /**
+     * Obtiene información sobre el número de boletín y el número de boletines en no laboral seguidos para una fecha
+     * determinada.
+     *
+     * @param fecha_str la fecha en formato YYYY-MM-DD.
+     * @return la información solicitada o mensaje de error.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{fecha}")
