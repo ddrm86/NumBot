@@ -72,12 +72,14 @@
     <profile>
         <subsystem xmlns="urn:jboss:domain:logging:8.0">
             <console-handler name="CONSOLE">
+                <encoding value="UTF-8"/>
                 <level name="INFO"/>
                 <formatter>
                     <named-formatter name="COLOR-PATTERN"/>
                 </formatter>
             </console-handler>
             <periodic-rotating-file-handler name="FILE" autoflush="true">
+                <encoding value="UTF-8"/>
                 <formatter>
                     <named-formatter name="PATTERN"/>
                 </formatter>
@@ -96,6 +98,9 @@
             </logger>
             <logger category="sun.rmi">
                 <level name="WARN"/>
+            </logger>
+            <logger category="es.bocm.numbot">
+                <level name="DEBUG"/>
             </logger>
             <root-logger>
                 <level name="INFO"/>
