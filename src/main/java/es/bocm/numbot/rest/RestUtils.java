@@ -84,8 +84,8 @@ public final class RestUtils {
      */
     public static Response crearRespuestaErrorDesconocido() {
         log.debug("Creando respuesta de error desconocido");
-        ErrorResponse response = new ErrorResponse("Error desconocido. con el administrador de sistemas " +
-                "para que revise la conexión con la BBDD y otras posibles causas.");
+        ErrorResponse response = new ErrorResponse("Error desconocido. Contactar con el administrador de " +
+                "sistemas para que revise la conexión con la BBDD y otras posibles causas.");
         return crearRespuestaJson(Response.Status.INTERNAL_SERVER_ERROR, response);
     }
 
