@@ -45,8 +45,8 @@ class NumbotResourceTest {
     @Test
     void producesCorrectUnknownErrorResponse() {
         when(mockExtDao.buscarExtraordinariosPorAnno(anyInt())).thenThrow(PersistenceException.class);
-        String expected = "{\"exito\":false,\"data\":{\"error\":\"Error desconocido. con el administrador de sistemas" +
-                " para que revise la conexión con la BBDD y otras posibles causas.\"}}";
+        String expected = "{\"exito\":false,\"data\":{\"error\":\"Error desconocido. Contactar con el administrador " +
+                "de sistemas para que revise la conexión con la BBDD y otras posibles causas.\"}}";
         Response response = numRest.getNumbot("2021-03-03");
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
         String json_res = response.readEntity(String.class);

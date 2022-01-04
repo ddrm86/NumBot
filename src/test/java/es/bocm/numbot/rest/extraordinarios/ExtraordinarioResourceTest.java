@@ -45,8 +45,8 @@ class ExtraordinarioResourceTest {
     @Test
     void producesCorrectUnknownErrorGetResponse() {
         when(mockExtDao.buscarExtraordinariosPorAnno(anyInt())).thenThrow(PersistenceException.class);
-        String expected = "{\"exito\":false,\"data\":{\"error\":\"Error desconocido. con el administrador de sistemas" +
-                " para que revise la conexión con la BBDD y otras posibles causas.\"}}";
+        String expected = "{\"exito\":false,\"data\":{\"error\":\"Error desconocido. Contactar con el administrador " +
+                "de sistemas para que revise la conexión con la BBDD y otras posibles causas.\"}}";
         Response response = extRest.getNumExtraordinarios("1000");
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
         String json_res = response.readEntity(String.class);
@@ -122,8 +122,8 @@ class ExtraordinarioResourceTest {
         String json_input = "{\"numero_extraordinarios\": \"1\"}";
         when(mockExtDao.buscarPorFecha(any(LocalDate.class))).thenReturn(Optional.empty());
         doThrow(PersistenceException.class).when(mockExtDao).crearOActualizar(any(Extraordinario.class));
-        String expected = "{\"exito\":false,\"data\":{\"error\":\"Error desconocido. con el administrador de sistemas" +
-                " para que revise la conexión con la BBDD y otras posibles causas.\"}}";
+        String expected = "{\"exito\":false,\"data\":{\"error\":\"Error desconocido. Contactar con el administrador" +
+                " de sistemas para que revise la conexión con la BBDD y otras posibles causas.\"}}";
         Response response = extRest.createOrUpdateNumExtraordinarios("1932-03-03", json_input);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
         String json_res = response.readEntity(String.class);
