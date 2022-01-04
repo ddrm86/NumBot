@@ -10,6 +10,8 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
 import java.time.LocalDate;
@@ -65,6 +67,8 @@ import static es.bocm.numbot.rest.RestUtils.*;
  */
 @Path("/festivos")
 public class FestivoResource {
+    private static final Logger log = LoggerFactory.getLogger(FestivoResource.class);
+
     @Inject
     FestivoDao festDao;
 
@@ -78,18 +82,23 @@ public class FestivoResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{anno}")
     public Response getFestivos(@PathParam("anno") String anno) {
+        log.info("Inicia petición GET para el año {}", anno);
         if (esAnnoNoValido(anno)) {
+            log.warn("Finaliza petición GET con año no válido {}", anno);
             return crearRespuestaAnnoNoValido();
         } else {
             List<Festivo> festivos;
             try {
                 festivos = festDao.buscarFestivosPorAnno(Integer.parseInt(anno));
             } catch (Exception e) {
+                log.error("Finaliza petición GET para el año {} con error desconocido", anno, e);
                 return crearRespuestaErrorDesconocido();
             }
             if (festivos.isEmpty()) {
+                log.warn("Finaliza petición GET para el año {} sin éxito por falta de festivos", anno);
                 return crearRespuestaFaltanFestivos();
             } else {
+                log.info("Finaliza petición GET para el año {} con éxito", anno);
                 return crearRespuestaExitosa(festivos);
             }
         }
@@ -102,6 +111,7 @@ public class FestivoResource {
      * @return la información solicitada.
      */
     private static Response crearRespuestaExitosa(Collection<Festivo> festivos) {
+        log.debug("Creando respuesta exitosa con los festivos {}", festivos);
         List<Map<String, String>> data = festivos.stream().map(Festivo::toMap).toList();
         FestivoResponse response = new FestivoResponse(data);
         return crearRespuestaJson(Response.Status.OK, response);
@@ -119,7 +129,9 @@ public class FestivoResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{anno}")
     public Response createOrUpdateFestivos(@PathParam("anno") String anno, String festivos_json) {
+        log.info("Inicia petición PUT para el año {} con contenido:\n{}", anno, festivos_json);
         if (esAnnoNoValido(anno)) {
+            log.warn("Finaliza petición PUT con año no válido {}", anno);
             return crearRespuestaAnnoNoValido();
         } else {
             List<Festivo> festivos_nuevos;
@@ -131,6 +143,7 @@ public class FestivoResource {
                         "{\"descripcion\": \"descripcion festivo 2\", \"fecha\": \"MM-DD\"}]. No se deben incluir " +
                         "festivos que caen en sábado ni en domingo, o en los días que no hay boletín " +
                         "(1 de enero, 25 de diciembre y Viernes Santo)");
+                log.warn("Finaliza petición PUT para el año {} con contenido no válido", anno);
                 return crearRespuestaJson(Response.Status.BAD_REQUEST, response);
             }
             try {
@@ -138,8 +151,10 @@ public class FestivoResource {
                 festDao.borrarFestivos(festivos_antiguos);
                 festDao.crearFestivos(festivos_nuevos);
             } catch (Exception e) {
+                log.error("Finaliza petición PUT para el año {} con error desconocido", anno, e);
                 return crearRespuestaErrorDesconocido();
             }
+            log.info("Finaliza petición PUT para el año {} con éxito", anno);
             return crearRespuestaExitosa(festivos_nuevos);
         }
     }
@@ -152,6 +167,7 @@ public class FestivoResource {
      * @return los objetos Festivo creados.
      */
     private List<Festivo> crearFestivos(String anno, String festivos_json) {
+        log.debug("Creando objetos Festivo con el año {} y el contenido\n{}", anno, festivos_json);
         List<Festivo> festivos = new ArrayList<>();
         Type type = new TypeToken<List<Map<String, String>>>(){}.getType();
         List<Map<String, String>> festivos_map = new Gson().fromJson(festivos_json, type);
