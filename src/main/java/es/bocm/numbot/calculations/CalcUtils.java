@@ -1,6 +1,8 @@
 package es.bocm.numbot.calculations;
 
 import es.bocm.numbot.entities.Festivo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -12,6 +14,8 @@ import java.util.Set;
  * Contiene métodos utilizados para cálculos de fechas.
  */
 public final class CalcUtils {
+    private static final Logger log = LoggerFactory.getLogger(CalcUtils.class);
+
     private CalcUtils() {
         throw new AssertionError("Clase de utilidades. No instanciar.");
     }
@@ -25,6 +29,7 @@ public final class CalcUtils {
      * @return la fecha del domingo de Pascua para el año indicado.
      */
     public static LocalDate getEasterSundayDate(int year) {
+        log.debug("Inicia cálculo del domingo de Pascua para el año {}", year);
         int a = year % 19,
                 b = year / 100,
                 c = year % 100,
@@ -39,7 +44,9 @@ public final class CalcUtils {
                 month = (h - m + r + 90) / 25,
                 day = (h - m + r + month + 19) % 32;
 
-        return LocalDate.of(year, month, day);
+        LocalDate easterSunday = LocalDate.of(year, month, day);
+        log.debug("Finaliza cálculo del domingo de Pascua para el año {} con resultado {}", year, easterSunday);
+        return easterSunday;
     }
 
     /**
@@ -51,10 +58,14 @@ public final class CalcUtils {
      * @return las fechas en que no se publica el boletín ese año.
      */
     public static Set<LocalDate> fechasSinBoletin(int anno) {
+        log.debug("Inicia obtención de fechas en que no se publica el boletín para el año {}", anno);
         final LocalDate unoEnero = LocalDate.of(anno, Month.JANUARY, 1);
         final LocalDate veinticincoDiciembre = LocalDate.of(anno, Month.DECEMBER, 25);
         final LocalDate viernesSanto = getEasterSundayDate(anno).minusDays(2);
-        return Set.of(unoEnero, veinticincoDiciembre, viernesSanto);
+        Set<LocalDate> fechasSinBoletin = Set.of(unoEnero, veinticincoDiciembre, viernesSanto);
+        log.debug("Finaliza obtención de fechas en que no se publica el boletín para el año {} con resultado {}",
+                anno, fechasSinBoletin);
+        return fechasSinBoletin;
     }
 
     /**
@@ -70,6 +81,8 @@ public final class CalcUtils {
      * @return número de boletines seguidos que se publican en día no laboral, a partir del día siguiente de la fecha.
      */
     public static int numBotsEnFestivoSeguidos(LocalDate fecha, Collection<Festivo> festivosAnno) {
+        log.debug("Inicia cálculo de número de boletines seguidos en día no laboral para la fecha {} y los festivos" +
+                " del año:\n{}", fecha, festivosAnno);
         int numBotsEnFestivoSeguidos = 0;
         boolean laboral = false;
         fecha = fecha.plusDays(1);
@@ -85,6 +98,8 @@ public final class CalcUtils {
             }
             fecha = fecha.plusDays(1);
         }
+        log.debug("Finaliza cálculo de número de boletines seguidos en día no laboral con resultado {}",
+                numBotsEnFestivoSeguidos);
         return numBotsEnFestivoSeguidos;
     }
 

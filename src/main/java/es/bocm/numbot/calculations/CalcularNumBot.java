@@ -1,6 +1,8 @@
 package es.bocm.numbot.calculations;
 
 import es.bocm.numbot.entities.Extraordinario;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -12,6 +14,8 @@ import java.util.Collection;
  * Contiene los métodos necesarios para calcular el número de boletín que corresponde a una fecha.
  */
 public final class CalcularNumBot {
+    private static final Logger log = LoggerFactory.getLogger(CalcularNumBot.class);
+
     private CalcularNumBot() {
         throw new AssertionError("Clase de utilidades. No instanciar.");
     }
@@ -28,6 +32,8 @@ public final class CalcularNumBot {
      * @return el número de Boletín.
      */
     public static int getNumBot(LocalDate fecha, int numExtMismoAnnoAntesOIgualFecha) {
+        log.debug("Inicia cálculo del número de boletín con fecha {} y número de extraordinarios en el mismo año de" +
+                " igual o anterior fecha {}", fecha, numExtMismoAnnoAntesOIgualFecha);
         final LocalDate unoEnero = LocalDate.of(fecha.getYear(), Month.JANUARY, 1);
         int numeroDias = (int) (ChronoUnit.DAYS.between(unoEnero, fecha) + 1);
         int numNoBot = (int) CalcUtils.fechasSinBoletin(fecha.getYear())
@@ -35,7 +41,11 @@ public final class CalcularNumBot {
                 .filter(d -> d.getDayOfWeek() != DayOfWeek.SUNDAY)
                 .filter(fecha::isAfter)
                 .count();
-        return numeroDias + numExtMismoAnnoAntesOIgualFecha - calcNumDomingos(fecha) - numNoBot;
+        int numDomingos = calcNumDomingos(fecha);
+        int numBot = numeroDias + numExtMismoAnnoAntesOIgualFecha - numDomingos - numNoBot;
+        log.debug("Finaliza cálculo del número de boletín con resultado: {} + {} - {} - {} = {}",
+                numeroDias, numExtMismoAnnoAntesOIgualFecha, numDomingos, numNoBot, numBot);
+        return numBot;
     }
 
     /**
@@ -47,6 +57,8 @@ public final class CalcularNumBot {
      * @return el número de Boletín.
      */
     public static int getNumBot(LocalDate fecha, Collection<Extraordinario> extraordinariosAnno) {
+        log.debug("Inicia cálculo del número de boletín con fecha {} y extraordinarios del año:\n{}",
+                fecha, extraordinariosAnno);
         int numExtMismoAnnoAntesOIgualFecha = (int) extraordinariosAnno
                 .stream()
                 .filter(e -> e.getFecha().isBefore(fecha.plusDays(1)))
@@ -84,10 +96,14 @@ public final class CalcularNumBot {
      * @return el número de días que han pasado hasta el primer domingo del año, inclusive.
      */
     private static int calcDiaPrimerDomingo(LocalDate fecha) {
+        log.debug("Inicia cálculo del primer domingo del año para la fecha {}", fecha);
         LocalDate fechaAux = LocalDate.of(fecha.getYear(), Month.JANUARY, 1);
         while (fechaAux.getDayOfWeek() != DayOfWeek.SUNDAY) {
             fechaAux = fechaAux.plusDays(1);
         }
-        return fechaAux.getDayOfMonth();
+        int primerDomingo = fechaAux.getDayOfMonth();
+        log.debug("Finaliza cálculo del primer domingo del año para la fecha {} con resultado {}",
+                fecha, primerDomingo);
+        return primerDomingo;
     }
 }
