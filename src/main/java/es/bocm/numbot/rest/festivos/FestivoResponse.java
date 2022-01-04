@@ -20,6 +20,6 @@ public record FestivoResponse(boolean exito, Map<String, List<Map<String, String
      */
     public FestivoResponse(List<Map<String, String>> data) {
         this(true, Map.of("festivos", data));
-        log.debug("Creando FestivoResponse con los datos {}", data);
+        log.debug("Creado FestivoResponse con los datos {}", data);
     }
 }

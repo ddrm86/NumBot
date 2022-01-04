@@ -17,6 +17,6 @@ public record ErrorResponse(boolean exito, Map<String, String> data) implements 
      */
     public ErrorResponse(String mensaje) {
         this(false, Map.of("error", mensaje));
-        log.debug("Creando ErrorResponse con el mensaje {}", mensaje);
+        log.debug("Creado ErrorResponse con el mensaje {}", mensaje);
     }
 }

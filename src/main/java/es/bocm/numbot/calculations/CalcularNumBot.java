@@ -57,7 +57,7 @@ public final class CalcularNumBot {
      * @return el número de Boletín.
      */
     public static int getNumBot(LocalDate fecha, Collection<Extraordinario> extraordinariosAnno) {
-        log.debug("Inicia cálculo del número de boletín con fecha {} y extraordinarios del año:\n{}",
+        log.debug("Calculando el número de boletín con fecha {} y extraordinarios del año:\n{}",
                 fecha, extraordinariosAnno);
         int numExtMismoAnnoAntesOIgualFecha = (int) extraordinariosAnno
                 .stream()

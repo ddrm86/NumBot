@@ -20,6 +20,6 @@ public record ExtraordinarioResponse(boolean exito, Map<String, List<Map<String,
      */
     public ExtraordinarioResponse(List<Map<String, String>> data) {
         this(true, Map.of("extraordinarios", data));
-        log.debug("Creando ExtraordinarioResponse con los datos {}", data);
+        log.debug("Creado ExtraordinarioResponse con los datos {}", data);
     }
 }
