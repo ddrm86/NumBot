@@ -4,4 +4,4 @@ COPY hsqldb.jar $JBOSS_HOME/modules/system/layers/base/org/hsqldb/main/
 COPY module.xml $JBOSS_HOME/modules/system/layers/base/org/hsqldb/main/
 COPY standalone.xml $JBOSS_HOME/standalone/configuration/
 
-COPY target/numbot-1.0-SNAPSHOT.war $JBOSS_HOME/standalone/deployments/
+COPY target/numbot-1.0.war $JBOSS_HOME/standalone/deployments/
