@@ -10,6 +10,8 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
 import java.time.LocalDate;
@@ -65,6 +67,8 @@ import static es.bocm.numbot.rest.RestUtils.*;
  */
 @Path("/extraordinarios")
 public class ExtraordinarioResource {
+    private static final Logger log = LoggerFactory.getLogger(ExtraordinarioResource.class);
+
     @Inject
     ExtraordinarioDao extDao;
 
@@ -78,15 +82,19 @@ public class ExtraordinarioResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{anno}")
     public Response getNumExtraordinarios(@PathParam("anno") String anno) {
+        log.info("Inicia petición GET para el año {}", anno);
         if (esAnnoNoValido(anno)) {
+            log.warn("Finaliza petición GET con año no válido {}", anno);
             return crearRespuestaAnnoNoValido();
         } else {
             List<Extraordinario> extraordinarios;
             try {
                 extraordinarios = extDao.buscarExtraordinariosPorAnno(Integer.parseInt(anno));
             } catch (Exception e) {
+                log.error("Finaliza petición GET para el año {} con error desconocido", anno, e);
                 return crearRespuestaErrorDesconocido();
             }
+            log.info("Finaliza petición GET para el año {} con éxito", anno);
             return crearRespuestaExitosa(extraordinarios);
         }
     }
@@ -98,6 +106,7 @@ public class ExtraordinarioResource {
      * @return la información solicitada.
      */
     private static Response crearRespuestaExitosa(Collection<Extraordinario> extraordinarios) {
+        log.debug("Creando respuesta exitosa con los extraordinarios {}", extraordinarios);
         List<Map<String, String>> data = extraordinarios.stream().map(Extraordinario::toMap).toList();
         ExtraordinarioResponse response = new ExtraordinarioResponse(data);
         return crearRespuestaJson(Response.Status.OK, response);
@@ -115,10 +124,12 @@ public class ExtraordinarioResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{fecha}")
     public Response createOrUpdateNumExtraordinarios(@PathParam("fecha") String fecha_str, String ext_json) {
+        log.info("Inicia petición PUT para la fecha {} con contenido: {}", fecha_str, ext_json);
         LocalDate fecha;
         try {
             fecha = LocalDate.parse(fecha_str);
         } catch (DateTimeParseException e) {
+            log.warn("Finaliza petición PUT con fecha no válida {}", fecha_str, e);
             return crearRespuestaFechaNoValida();
         }
         Extraordinario ext;
@@ -129,6 +140,7 @@ public class ExtraordinarioResource {
             ErrorResponse response = new ErrorResponse("Formato de número de boletines" +
                     " extraordinarios incorrecto. Debe ser un entero mayor o igual que cero. Ejemplo:" +
                     " {\"numero_extraordinarios\": \"1\"}");
+            log.warn("Finaliza petición PUT con fecha {} con contenido no válido", fecha_str);
             return crearRespuestaJson(Response.Status.BAD_REQUEST, response);
         }
         Optional<Extraordinario> opt_ext = extDao.buscarPorFecha(fecha);
@@ -141,8 +153,10 @@ public class ExtraordinarioResource {
         try {
             extDao.crearOActualizar(ext);
         } catch (Exception e) {
+            log.error("Finaliza petición PUT para la fecha {} con error desconocido", fecha_str, e);
             return crearRespuestaErrorDesconocido();
         }
+        log.info("Finaliza petición PUT para la fecha {} con éxito", fecha_str);
         return crearRespuestaExitosa(List.of(ext));
     }
 
@@ -154,8 +168,8 @@ public class ExtraordinarioResource {
      * @return el objeto Extraordinario creado.
      */
     private Extraordinario crearExtraordinario(LocalDate fecha, String ext_json) {
-        Type type = new TypeToken<Map<String, Integer>>() {
-        }.getType();
+        log.debug("Creando Extraordinario con la fecha {} y el contenido {}", fecha, ext_json);
+        Type type = new TypeToken<Map<String, Integer>>() {}.getType();
         Map<String, Integer> num_ext = new Gson().fromJson(ext_json, type);
         return new Extraordinario(null, fecha, num_ext.get("numero_extraordinarios"));
     }

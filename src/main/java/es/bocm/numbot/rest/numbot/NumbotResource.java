@@ -13,6 +13,8 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -42,6 +44,8 @@ import static es.bocm.numbot.rest.RestUtils.*;
  */
 @Path("/numero-boletin")
 public class NumbotResource {
+    private static final Logger log = LoggerFactory.getLogger(NumbotResource.class);
+
     @Inject
     ExtraordinarioDao extDao;
 
@@ -59,10 +63,12 @@ public class NumbotResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{fecha}")
     public Response getNumbot(@PathParam("fecha") String fecha_str) {
+        log.info("Inicia petición GET para la fecha {}", fecha_str);
         LocalDate fecha;
         try {
             fecha = LocalDate.parse(fecha_str);
         } catch (DateTimeParseException e) {
+            log.warn("Finaliza petición GET con fecha no válida {}", fecha_str, e);
             return crearRespuestaFechaNoValida();
         }
         int anno = fecha.getYear();
@@ -72,15 +78,18 @@ public class NumbotResource {
             extAnno = extDao.buscarExtraordinariosPorAnno(anno);
             festivosAnno = festDao.buscarFestivosPorAnno(anno);
         } catch (Exception e) {
+            log.error("Finaliza petición GET para la fecha {} con error desconocido", fecha_str, e);
             return crearRespuestaErrorDesconocido();
         }
         if (festivosAnno.isEmpty()) {
+            log.warn("Finaliza petición GET para la fecha {} sin éxito por falta de festivos", fecha_str);
             return crearRespuestaFaltanFestivos();
         }
         int numBot = CalcularNumBot.getNumBot(fecha, extAnno);
         int numBotsEnFestivoSeguidos = CalcUtils.numBotsEnFestivoSeguidos(fecha, festivosAnno);
         NumbotResponse response = new NumbotResponse(Integer.toString(numBot),
                 Integer.toString(numBotsEnFestivoSeguidos));
+        log.info("Finaliza petición GET para la fecha {} con éxito", fecha_str);
         return crearRespuestaJson(Response.Status.OK, response);
     }
 }

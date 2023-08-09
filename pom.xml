@@ -6,7 +6,7 @@
 
     <groupId>es.bocm</groupId>
     <artifactId>numbot</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <name>NumBot</name>
     <packaging>war</packaging>
 
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core-jakarta</artifactId>
-            <version>5.6.1.Final</version>
+            <version>5.6.3.Final</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -62,19 +62,19 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.version}</version>
+            <version>5.8.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
+            <version>5.8.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <version>${junit.version}</version>
+            <version>5.8.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -104,6 +104,18 @@
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>4.2.0</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.32</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.32</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

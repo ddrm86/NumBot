@@ -42,8 +42,8 @@ class FestivoResourceTest {
     @Test
     void producesCorrectUnknownErrorGetResponse() {
         when(mockFestDao.buscarFestivosPorAnno(anyInt())).thenThrow(PersistenceException.class);
-        String expected = "{\"exito\":false,\"data\":{\"error\":\"Error desconocido. con el administrador de sistemas" +
-                " para que revise la conexión con la BBDD y otras posibles causas.\"}}";
+        String expected = "{\"exito\":false,\"data\":{\"error\":\"Error desconocido. Contactar con el administrador " +
+                "de sistemas para que revise la conexión con la BBDD y otras posibles causas.\"}}";
         Response response = festRest.getFestivos("2021");
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
         String json_res = response.readEntity(String.class);
@@ -111,8 +111,8 @@ class FestivoResourceTest {
         String json_input = "[{\"descripcion\": \"Festivo en fecha correcta\",  \"fecha\": \"12-06\"}]";
         when(mockFestDao.buscarFestivosPorAnno(anyInt())).thenReturn(Collections.emptyList());
         doThrow(PersistenceException.class).when(mockFestDao).borrarFestivos(anyCollection());
-        String expected = "{\"exito\":false,\"data\":{\"error\":\"Error desconocido. con el administrador de sistemas" +
-                " para que revise la conexión con la BBDD y otras posibles causas.\"}}";
+        String expected = "{\"exito\":false,\"data\":{\"error\":\"Error desconocido. Contactar con el administrador " +
+                "de sistemas para que revise la conexión con la BBDD y otras posibles causas.\"}}";
         Response response = festRest.createOrUpdateFestivos("2021", json_input);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR, response.getStatusInfo());
         String json_res = response.readEntity(String.class);
