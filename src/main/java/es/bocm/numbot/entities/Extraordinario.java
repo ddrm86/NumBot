@@ -46,7 +46,7 @@ public class Extraordinario {
             throw new IllegalArgumentException("La fecha no puede ser nula");
         }
         this.fecha = fecha;
-        if (numero <= 0) {
+        if (numero < 0) {
             throw new IllegalArgumentException("El número de boletines extraordinarios" +
                     " debe ser mayor que cero");
         }

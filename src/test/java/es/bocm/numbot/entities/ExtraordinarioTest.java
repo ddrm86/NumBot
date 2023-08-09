@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ExtraordinarioTest {
     @ParameterizedTest
-    @ValueSource(ints = { 0, -2 })
+    @ValueSource(ints = { -1, -2 })
     void createExtraordinarioWithInvalidNumberThrowsException(int number) {
         assertThrows(IllegalArgumentException.class, () -> new Extraordinario(null, LocalDate.of(2021,
                 1, 12), number));

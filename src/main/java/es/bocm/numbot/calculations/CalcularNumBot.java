@@ -18,7 +18,7 @@ public final class CalcularNumBot {
 
     /**
      * Calcula el número de Boletín que corresponde a una fecha determinada.
-     *
+     * <p>
      * Se tiene en cuenta el número de días del año que han pasado salvo los que no se publica el Boletín y el número
      * de boletines extraordinarios que ha habido.
      *
@@ -47,10 +47,11 @@ public final class CalcularNumBot {
      * @return el número de Boletín.
      */
     public static int getNumBot(LocalDate fecha, Collection<Extraordinario> extraordinariosAnno) {
-        int numExtMismoAnnoAntesOIgualFecha = (int) extraordinariosAnno
+        int numExtMismoAnnoAntesOIgualFecha = extraordinariosAnno
                 .stream()
                 .filter(e -> e.getFecha().isBefore(fecha.plusDays(1)))
-                .count();
+                .mapToInt(Extraordinario::getNumero)
+                .sum();
         return getNumBot(fecha, numExtMismoAnnoAntesOIgualFecha);
     }
 

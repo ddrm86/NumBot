@@ -47,10 +47,35 @@ class CalcularNumBotTest {
     }
 
     @Test
+    void getCorrectNumBotExtsBeforeDate2() {
+        Set<Extraordinario> exts = Set.of(new Extraordinario(null,
+                LocalDate.of(2021, 1, 6), 3));
+        assertEquals(8, CalcularNumBot.getNumBot(LocalDate.of(2021, 1, 7),
+                exts));
+    }
+
+    @Test
     void getCorrectNumBotExtsSameDate() {
         Set<Extraordinario> exts = Set.of(new Extraordinario(null,
                 LocalDate.of(2021, 1, 7), 1));
         assertEquals(6, CalcularNumBot.getNumBot(LocalDate.of(2021, 1, 7),
                 exts));
     }
+
+    @Test
+    void getCorrectNumBotExtsSameDate2() {
+        Set<Extraordinario> exts = Set.of(new Extraordinario(null,
+                LocalDate.of(2021, 1, 7), 2));
+        assertEquals(7, CalcularNumBot.getNumBot(LocalDate.of(2021, 1, 7),
+                exts));
+    }
+
+    @Test
+    void getCorrectNumBotExtsSameDate3_noExts() {
+        Set<Extraordinario> exts = Set.of(new Extraordinario(null,
+                LocalDate.of(2021, 1, 7), 0));
+        assertEquals(5, CalcularNumBot.getNumBot(LocalDate.of(2021, 1, 7),
+                exts));
+    }
+
 }

@@ -54,6 +54,14 @@ import static es.bocm.numbot.rest.RestUtils.*;
  *  }
  * }
  * </pre>
+ *
+ * NOTA: se pueden "borrar" los extraordinarios introducidos por error en un día concreto poniendo la cuenta a 0:
+ *
+ * <pre>
+ * PUT: /extraordinarios/2021-03-20
+ * {"numero_extraordinarios": "0"}
+ * </pre>
+ *
  */
 @Path("/extraordinarios")
 public class ExtraordinarioResource {

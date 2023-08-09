@@ -92,7 +92,7 @@ class ExtraordinarioResourceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"asdf", "0", "-12", ""})
+    @ValueSource(strings = {"asdf", "-1", "-12", ""})
     void producesCorrectInvalidNumExtsResponse(String numExts) {
         String json_input = "{\"numero_extraordinarios\": \"" + numExts + "\"}";
         String expected = "{\"exito\":false,\"data\":{\"error\":\"Formato de número de boletines extraordinarios " +
